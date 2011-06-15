@@ -22,3 +22,4 @@ cp ~/svn/projects/mGene_core/auxiliary_data/add_reads_from_bam.m release/src/aux
 # modified files
 cp get_base_dir.m_template release/src/get_base_dir.m
 cp paths.m_template release/src/paths.m
+cp configure release/src/configure
