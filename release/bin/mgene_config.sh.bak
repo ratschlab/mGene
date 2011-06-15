@@ -1,0 +1,12 @@
+#/bin/bash
+
+export MGENE_PATH=/Users/raetsch/svn/releases/mGene.web-0.0.1-GR/release
+export MGENE_SRC_PATH=/Users/raetsch/svn/releases/mGene.web-0.0.1-GR/release/src
+export SHOGUN_PATH=/Users/raetsch/svn/releases/mGene.web-0.0.1-GR/release/shogun
+export SGE_BIN_PATH=
+export INTERPRETER=octave
+export MATLAB_BIN_PATH=
+export OCTAVE_BIN_PATH=/sw/bin/octave
+export OPTIMIZER=mosek
+export OPTIMIZER_TOOLBOX_PATH=/Users/raetsch/svn/releases/mGene.web-0.0.1-GR/release/mosek/octave
+export OPTIMIZER_PATH=/Users/raetsch/svn/releases/mGene.web-0.0.1-GR/release/mosek

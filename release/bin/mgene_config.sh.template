@@ -1,0 +1,28 @@
+#/bin/bash
+
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Written (W) 2005-2009 Gunnar Raetsch, Gabriele Schweikert, Jonas Behr, Soeren Sonnenburg, Alexander Zien, Georg Zeller, Andre Noll, Cheng Soon Ong, Petra Philips
+# Copyright (C) 2005-2009 Max Planck Society and Fraunhofer Institute FIRST 
+#
+
+set -e 
+
+export MGENE_PATH=
+export MGENE_SRC_PATH=
+export SHOGUN_PATH=
+export SGE_BIN_PATH=
+export INTERPRETER=
+export MATLAB_BIN_PATH=
+export OCTAVE_BIN_PATH=
+export OPTIMIZER=
+export OPTIMIZER_PATH=
+export OPTIMIZER_TOOLBOX_PATH=
+
+
+if [ -z "${MGENE_PATH}" ]; then echo Warning: variable MGENE_PATH not set\; consider running ./setup_mgene.sh ; fi
+

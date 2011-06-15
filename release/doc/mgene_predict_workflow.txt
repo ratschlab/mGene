@@ -1,0 +1,93 @@
+**What it does**
+
+This tool predicts protein-coding genes on the complete sequence given
+in the FASTA file. The output will be given as a GFF3 file. For some
+organisms we have already trained a model. To use one of those, choose
+"Pretrained predictor" as *Predictor source* and check the list of
+organisms. If your organism of interest is not included in that list,
+you can use mGeneTrain to train a model yourself. However,
+you will need some annotated genes in a GFF3 file for this task.
+
+
+**Input**
+
+* To run an example, go to the "Examples and Instructions" tool
+  and upload one of the example data sets provided,
+  e.g., "Caenorhabditis elegans (small part of chromosome II)". A FASTA
+  file and a GFF3 file will appear in your History. Now choose
+  the FASTA file as input for this tool. Then choose "Pretrained
+  predictor" as *Predictor source* and select "Caenorhabditis elegans".
+
+* To run the tool on your own data, upload a sequence file (in FASTA
+  format) from your computer with the "Upload file". It will then
+  appear in the History. Alternatively, you can also get FASTA files from one
+  of the connected databases like UCSC by choosing the "Get Data" tool. 
+
+* If you have previously run mGeneTrain, this has generated an output
+  file in TmGP format. You can use this model by choosing "Predictor
+  from current history" and picking the TmGP file. Otherwise, choose
+  "Pretrained predictor" and pick the model from the list of pre-trained models. 
+
+**Common Errors**
+
+
+**Output**
+
+
+* The tool will generate a GFF3 file containing all predicted
+  genes. To assess the quality of the prediction, use
+  mGeneEval and compare it to another annotation on the same sequence.
+
+------
+
+
+**About formats**
+
+
+**FASTA format** A sequence in FASTA format begins with a single-line
+description, followed by lines of sequence data. The description line
+is distinguished from the sequence data by a "greater than" (>) symbol
+in the first column. The token until the first space or the end of the 
+line is used as an identifier for the sequence. The remainder of the 
+description line is ignored.
+
+An example sequence in FASTA format is:
+
+>CHR1
+
+CCCTAAACCCTAAACCCTAAACCCTAAACCTCTGAATCCTTAATCCCTAAATCCCTAAAT
+CTTTAAATCCTACATCCATGAATCCCTAAATACCTAATTCCCTAAACCCGAAACCGGTTT
+CTCTGGTTGAAAATCATTGTGTATATAATGATAATTTTATCGTTTTTATGTAATTGCTTA
+TTGTTGTGTGTAGATTTTTTAAAAATATCATTTGAGGTCAATACAAATCCTATTTCTTGT
+GGTTTTCTTTCCTTCACTTAGCTATGGATGGTTTATCTTCATTTGTTATATTGGATACAA
+GCTTTGCTACGATCTACATTTGGGAATGTGAGTCTCTTATTGTAACCTTAGGGTTGGTTT
+ATCTCAAGAATCTTATTAATTGTTTGGACTGTTTATGTTTGGACATTTATTGTCATTCTT
+ACTCCTTTGTGGAAATGTTTGTTCTATCAATTTATCTTTTGTGGGAAAATTATTTAGTTG
+TAGGGATGAAGTCTTTCTTCGTTGTTGTTACGCTTGTCATCTCATCTCTCAATGATATGG
+GATGGTCCTTTAGCATTTATTCTGAAGTTCTTCTGCTTGATGATTTTATCCTTAGCCAAA
+AGGATTGGTGGTTTGAAGACACATCATATCAAAAAAGCTATCGCCTCGACGATGCTCTAT
+TTCTATCCTTGTAGCACACATTTTGGCACTCAAAAAAGTATTTTTAGATGTTTGTTTTGC
+...
+
+**GFF3 format** General Feature Format is a format for describing genes
+and other features associated with DNA, RNA, and protein sequences. GFF
+lines have nine tab-separated fields:
+
+    1. seqname - The name of the chromosome or scaffold (e.g., chr1, chrY_random).
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. (The first base on a chromosome is numbered 1.)
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Defines the strand - either '+' or '-'.
+    8. frame - If the feature is a coding exon, *frame* should be a number between 0 and 2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+For more information see http://www.sequenceontology.org/gff3.shtml
+
+
+**TmGP format** Trained mGene Predictor is an internal structure that
+contains the complete trained model including all signal and content
+predictors as well as the gene predictor to predict genes from DNA
+sequences.
+

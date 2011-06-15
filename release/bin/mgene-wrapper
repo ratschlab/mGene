@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Written (W) 2005-2009 Gunnar Raetsch, Gabriele Schweikert, Jonas Behr, Soeren Sonnenburg, Alexander Zien, Georg Zeller, Cheng Soon Ong, Petra Philips
+# Copyright (C) 2005-2009 Max Planck Society and Fraunhofer Institute FIRST 
+#
+
+# mGene wrapper script to start the interpreter with the correct list of arguments
+
+set -e
+
+PROG=`basename $0`
+DIR=`dirname $0`
+
+echo ${PROG}: This program is part of mGene version 0.1 beta.
+echo Please make sure you read the DISCLAIMER.
+echo
+
+exec ${DIR}/start_interpreter.sh ${PROG} "`${DIR}/genarglist.sh $@`"

@@ -1,0 +1,143 @@
+**Introduction**
+
+This is the software package mGene for genomewide prediction of protein
+coding genes from DNA sequences. It implements the ideas presented in
+[1]. The high accuracy of our system was shown in the gene finder
+competition nGASP on nematode genomes [2].  
+
+In the following we will provide some general instructions on how to use
+the mGene tools mgene_train, mgene_predict, and mgene_eval. These tools
+are mainly addressed to researchers who wish to quickly obtain a gene
+annotation for their sequence of interest. For researchers who are also
+interested in individual components of mGene, like splice site or
+promoter predictions, we recommend to have a look at the additionally
+provided mGene Modules. These might also be of interest for
+computational biologist that work on DNA sequence prediction tasks.
+
+If you have addiotional questions on mGene, please write an email to
+support@mgene.org.
+
+------
+
+**Examples**
+
+**Example 1: Using a pre-trained model to predict genes from DNA sequence**
+
+As a simple example we will use the provided data (see subdirectory
+./examples) from *Caenorhabditis elegans* to predict genes. This task
+will only require a FASTA file containing the genomic sequence. We will
+use some annotated genes in a GFF3 file merely to compare them with the
+results of our predictions and to estimate the performance accuracy. The
+following tools are needed:
+
+* **mgene_predict:** To start generating gene predictions run the
+  following command
+
+  ./bin/mgene_predict examples/elegans.fasta "Caenorhabditis elegans" elegans-prediction.gff3 
+
+  It will take up to 45 minutes until the result file elegans.gff3 will
+  be available in the current directory. 
+
+* **mgene_eval:** This tool is used to compare the obtained gene
+  predictions against a known annotation. Run
+
+  ./bin/mgene_eval examples/elegans.gff3 elegans-prediction.gff3 elegans-evaluation.txt
+
+  As a result an extensive accuracy report is generated and stored in
+  elegans-evaluation.txt as text file.
+
+
+**Example 2:  Training a new model and applying it to predict unknown genes from DNA sequence**
+
+We are currently applying our system to a variety of other
+organisms. However if we do not (yet) provide a pre-trained model for
+your organism of interest, you have the possibility to train the system
+yourself. In this case you will need a FASTA file with the genomic
+sequence and additionally a GFF3 file containing some annotated,
+i.e. known genes. To elucidate the process along the lines of an example
+we will again use the provided data from *Caenorhabditis elegans*. The
+following tools are applied:
+
+* **mgene_train:** To train mGene on the C. elegans toy data run:
+
+  ./bin/mgene_predict examples/elegans.fasta examples/elegans.gff3 "wormbase"   
+
+  Training a model to detect genes is not a simple task and can take
+  quite some time. The output will be the internal data structure TmGP
+  (Trained mGene Predictor). It can be used with mgene_predict to
+  predict genes.
+
+For training on your own data you need to upload a FASTA file with the
+DNA sequence and additionally a corresponding GFF3 file with at least
+a few annotated genes. You can then continue with the mgene_train tool
+on these files.
+
+
+------
+
+**About formats**
+
+
+
+**FASTA format** A sequence in FASTA format begins with a single-line
+description, followed by lines of sequence data. The description line
+is distinguished from the sequence data by a "greater than" (>) symbol
+in the first column. The token until the first space or the end of the 
+line is used as an identifier for the sequence. The remainder of the 
+description line is ignored.
+
+An example sequence in FASTA format is:
+
+>CHR1
+
+CCCTAAACCCTAAACCCTAAACCCTAAACCTCTGAATCCTTAATCCCTAAATCCCTAAAT
+CTTTAAATCCTACATCCATGAATCCCTAAATACCTAATTCCCTAAACCCGAAACCGGTTT
+CTCTGGTTGAAAATCATTGTGTATATAATGATAATTTTATCGTTTTTATGTAATTGCTTA
+TTGTTGTGTGTAGATTTTTTAAAAATATCATTTGAGGTCAATACAAATCCTATTTCTTGT
+GGTTTTCTTTCCTTCACTTAGCTATGGATGGTTTATCTTCATTTGTTATATTGGATACAA
+GCTTTGCTACGATCTACATTTGGGAATGTGAGTCTCTTATTGTAACCTTAGGGTTGGTTT
+ATCTCAAGAATCTTATTAATTGTTTGGACTGTTTATGTTTGGACATTTATTGTCATTCTT
+ACTCCTTTGTGGAAATGTTTGTTCTATCAATTTATCTTTTGTGGGAAAATTATTTAGTTG
+TAGGGATGAAGTCTTTCTTCGTTGTTGTTACGCTTGTCATCTCATCTCTCAATGATATGG
+GATGGTCCTTTAGCATTTATTCTGAAGTTCTTCTGCTTGATGATTTTATCCTTAGCCAAA
+AGGATTGGTGGTTTGAAGACACATCATATCAAAAAAGCTATCGCCTCGACGATGCTCTAT
+TTCTATCCTTGTAGCACACATTTTGGCACTCAAAAAAGTATTTTTAGATGTTTGTTTTGC
+...
+
+**GFF3 format** General Feature Format is a format for describing genes
+and other features associated with DNA, RNA, and protein sequences. GFF
+lines have nine tab-separated fields:
+
+    1. seqname - The name of the chromosome or scaffold (e.g., chr1, chrY_random).
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. (The first base on a chromosome is numbered 1.)
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Defines the strand - either '+' or '-'.
+    8. frame - If the feature is a coding exon, frame should be a number between 0 and 2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+For more information see http://www.sequenceontology.org/gff3.shtml
+
+
+**TmGP format** Trained mGene Predictor is an internal structure that
+contains the complete trained model including all signal and content
+predictors as well as the gene predictor to predict genes from
+sequence.
+
+
+
+**References** 
+
+[1] Schweikert, G., Zien, A., Zeller, G., Behr, J.,
+Dieterich, C., Ong, C., Philips, P., Bona, F. D., Hartmann, L.,
+Bohlen, A., Kroeger, N., Sonnenburg, S., and Raetsch, G. (2009)
+mGene: Accurate computational gene finding with application to
+nematode genomes. Genome Research, under review.
+
+[2] Coghlan, A., Fiedler, T., McKay, S., Flicek, P., Harris, T.,
+Blasiar, D., The nGASP Consortium, and Stein, L. (December, 2008)
+nGASP: the nematode genome annotation assessment project. BMC
+Bioinformatics, 9(1), 549.
+

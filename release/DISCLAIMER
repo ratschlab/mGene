@@ -1,0 +1,70 @@
+Dear mGene User,
+
+This is the first public release of mGene version 0.1 beta.  This
+software is the result of further development of mGene as described in
+[1] and is similar to the implementation used for mGene.web described
+in [2]. 
+
+The main focus of the improvements relative to [1] is to make it
+easier to use, the software more stable and applicable to a broad
+range of organisms. The current version of mGene does not support:
+
+1. use of whole genome alignments (features used in
+   mGene.multi in [1])
+
+2. use of alignment of ESTs, cDNAs or proteins (features used in
+   mGene.seq in [1])
+
+3. Trans-splicing, operons and polyA sites. These feature are
+   primarily important for nematode genomes and are often not necessary
+   for other organisms.
+
+4. Model selection: All models are trained with preset
+   hyper-parameters. Model-selection can significantly improve the
+   results of the predictions.
+
+5. Prediction tuning: There are several ways to trade-off between
+   sensitivity and specificity in gene prediction. However, right now
+   these expert options are not supported in this version.
+
+There are some additional limitations in this release:
+
+1. Currently, we implemented some inherent settings for sub-sampling
+   examples to reduce the computation time. Enabling the use of all
+   examples (as in [1]) leads to better results.
+
+2. Reading genes for training from GFF3 files is tricky. We only
+   accept a gene's annotation, if it satisfies certain, quite
+   stringent conditions, leading to smaller sets for training.
+   In some cases we try to infer missing information, like the open
+   reading frame (which can be easily wrong). Training on poor-quality
+   input data generally leads to a poor prediction performance.
+
+3. Currently, intermediate files a relatively big and can easily addup
+   to a few gigabytes for a genome like the one of
+   C. elegans. Moreover, depending on the length of the
+   chromosomes/contigs mGene may need considerable amounts of main
+   memory.
+
+4. Currently, mGene uses regions around annotated genes for training the gene 
+   predictor, where we use some heuristic to determine where to cut
+   intergenic regions. (These regions are assembled into blocks for
+   training.) This strategies always works to a certain extend (even
+   for missing genes in the annotation), but is inferior to using fully
+   annotated regions (as done in [1]). There will be more options to
+   control this behaviour in future versions.
+
+5. Right now we use two versions of the shogun toolbox, leading to
+   problems running the monolithic workflows in octave. This will be
+   solvedx in the next release.
+
+We are working towards solving these issues, to make the software more
+stable and to include more features into mGene.
+
+If you are interested in using mGene for annotating an organism's
+genome or for comparing it with other predictions, please let us know
+(support@mgene.org or Gunnar.Raetsch@tuebingen.mpg.de). We would be
+glad to assist you to obtain the optimal results using mGene.
+
+
+The mGene Development Team

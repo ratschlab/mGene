@@ -1,0 +1,52 @@
+**What it does**
+
+This tool runs the trained content predictor, supplied as a TCP file,
+on the given genomic sequences, as encoded in the GIO file.  It
+operates as follows:
+
+Around each location in the given genomic sequence, a sequence window
+(the extent of which is specified in the TCP file) is copied from the
+genomic sequence.  This window serves as input for the trained SVM,
+which computes a corresponding output score.  The higher the score,
+the more likely that the location is indeed part of a segment of the
+given content type.
+
+------
+
+**Output**
+
+The output is a file in signal prediction format (SPF) which contains
+a prediction score for each location in the genomic input sequence.
+(Note that this is not a mistake: no extra "content prediction format"
+is required, as SPF is perfectly suitable for contents as well.)
+
+The output may typically serve as input for 'GeneTrain'.  It can also
+be analyzed with 'ContentEval'.
+
+------
+
+**Example**
+
+A content predictor for acceptor splice sites may provided the following outputs::
+
+   CHR1	acc	Conf_cum	731	+	0.239
+   CHR1	acc	Conf_cum	734	+	0.264
+   CHR1	acc	Conf_cum	764	+	0.857
+   CHR1	acc	Conf_cum	766	+	0.115
+   CHR1	acc	Conf_cum	784	+	0.085
+
+--------
+
+**About formats**
+
+**CPF format** Content Prediction format was designed for providing
+information such as labels or predictions for specific genomic
+locations (with strand information). It has requires exactly six
+fields::
+
+    1. chrom - The name of the chromosome (e.g. chr1, chrY_random).
+    2. contentName - possible choices include intergenic, utr5exon, cds_exon, intron utr3exon.
+    3. scoreName - possible choices include label, output.
+    4. chromPos - The position in the chromosome. (The first base in a chromosome is numbered 1.)
+    5. strand - Defines the strand - either '+' or '-'.
+    6. score - The score between -infinity and infinity. If scoreName is 'label', then the score should be either -1 or 1.

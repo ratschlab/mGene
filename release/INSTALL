@@ -1,0 +1,27 @@
+To setup mGene follow the these steps:
+
+1. Goto ./mex and run make ('make octave' for Octave and 'make matlab' for
+   Matlab)
+
+2. Download and compile Shogun toolbox from
+   http://www.shogun-toolbox.org, copy resulting .mex (matlab) or .oct
+   (octave) file and all libraries in ./shogun
+
+3. Download and compile Shogun toolbox version 0.6.7 from
+   http://www.shogun-toolbox.org, copy resulting .mex (matlab) or .oct
+   (octave) file in ./shogun-0.6.7
+
+   Please note: We currently need this version due to a bug introduced in
+   Shogun version 0.7 that has not been fixed yet (will be in one of the
+   next next releases). This only affects the tool mgene_signal_predict.
+
+4. Run ./setup_mgene.sh and setup paths and configuration options 
+   for mGene.
+
+Optional
+5. Customize subsampling settings in src/subsample_policy.m
+6. If SGE Gridengine support is enable, customize the scheduling policy in src/rproc_policy.m and src/rproc_memtime_policy.m.
+
+Try to run ./run_example1.sh and ./run_example2.sh to check whether
+you installation is working.
+

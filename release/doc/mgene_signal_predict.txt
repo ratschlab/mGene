@@ -1,0 +1,57 @@
+**What it does**
+
+This tool runs the trained signal predictor, supplied as a TSP file,
+on the given genomic sequences, as encoded in the GIO file.  It
+performs the following steps:
+
+1. All candidate locations in the sequence are collected.  For signals
+that have a mandatory consensus sequence, like AG for acceptor splice
+sites, all occurences (and only those) qualify as candidates.  For
+signals without mandatory consensus sequence, like transcription start
+sites, every single nucleotide qualifies.
+
+2. Around each candidate, a sequence window (the extent of which is
+specified in the TSP file) is copied from the genomic sequence.  This
+window serves as input for the trained SVM, which computes a
+corresponding output score.  The higher the score, the more likely
+that the candidate is indeed an example of the signal under
+consideration.
+
+------
+
+**Output**
+
+The output is a file in signal prediction format (SPF) which contains
+a prediction score for each candidate location in the genomic input
+sequence.
+
+The output may typically serve as input for 'GeneTrain'.  It can also
+be analyzed with 'SignalEval'.
+
+------
+
+**Example**
+
+A signal predictor for acceptor splice sites may provided the following outputs::
+
+   CHR1	acc	Conf_cum	731	+	0.239
+   CHR1	acc	Conf_cum	734	+	0.264
+   CHR1	acc	Conf_cum	764	+	0.857
+   CHR1	acc	Conf_cum	766	+	0.115
+   CHR1	acc	Conf_cum	784	+	0.085
+
+--------
+
+**About formats**
+
+**SPF format** Signal Prediction format was designed for providing
+information such as labels or predictions for specific genomic
+locations (with strand information). It has requires exactly six
+fields::
+
+    1. chrom - The name of the chromosome (e.g. chr1, chrY_random).
+    2. signalName - possible choices include tss, tis, acc, don, cdsStop, cleave.
+    3. scoreName - possible choices include label, output, Conf, Conf_Cum
+    4. chromPos - The position in the chromosome. (The first base in a chromosome is numbered 1.)
+    5. strand - Defines the strand - either '+' or '-'.
+    6. score - The score between -infinity and infinity. If scoreName is 'label', then the score should be either -1 or 1.

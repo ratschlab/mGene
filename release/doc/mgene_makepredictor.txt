@@ -1,0 +1,5 @@
+**What it does**
+
+This tool bundles all necessary trained signal, content and gene
+predictor objects into a trained mGene predictor object that can be used
+together with the mgene_predict.

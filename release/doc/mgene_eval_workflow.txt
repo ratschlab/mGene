@@ -1,0 +1,141 @@
+**What it does**
+
+This tool compares two gene annotation files, where one is considered
+to be the "true annotation", i.e., the label file, while the other is
+considered to be a potentially incorrect annotation, i.e., the prediction file.
+The performance metrices employed are similar to those used in the
+EGASP competition [1]: Sensitivity and specifcity are 
+determined on the level of nucleotides, exons, transcripts, and genes
+while considering coding regions only. (See [2] for more details.)
+
+**References** 
+
+[1] Guigo R., J.F. Flicek, P. Abril, A. Reymond, J. Lagarde, F. Denoeud, S. Antonarakis,
+M. Ashburner, V.B. Bajic, E. Birney, R. Castelo, E. Eyras, C. Ucla, T.R. Gingeras,
+J. Harrow, T. Hubbard, S.E. Lewis, and M.G. Reese. EGASP: The human ENCODE
+genome annotation assessment project. Genome Biology, 7(S2), 2006.
+
+[2] Schweikert, G., Zien, A., Zeller, G., Behr, J.,
+Dieterich, C., Ong, C., Philips, P., Bona, F. D., Hartmann, L.,
+Bohlen, A., Kroeger, N., Sonnenburg, S., and Raetsch, G. (2009)
+mGene: Accurate computational gene finding with application to
+nematode genomes. Genome Research, under review.
+
+
+**Input**
+
+* Use two GFF3 files. 
+
+* You also need a FASTA file containing the genomic sequence under consideration. 
+
+* Select whether you wish to evaluate the gene predictions with
+  respect to the complete sequence contained in the FASTA file or only
+  in the vicinity of the annotated genes from the label file.
+
+**Common Mistakes**
+
+* Note: If your annotation was incomplete for the sequence under
+  consideration while you computed predictions for the complete
+  sequence, your specificity will naturally be low when comparing for the 
+  the whole sequence, since any predicted gene that does not overlap with
+  an annotated one is counted as a wrong prediction. In this case, you
+  should choose the option "Only consider regions around annoted
+  genes".
+
+* If you upload a GFF3 file, you need to specify the file format as
+  GFF3. If you choose "Auto-detect", the file will be uploaded as a GFF
+  file and you can't select it as input for the mGeneEval tool.
+
+* Both annotation files, the label file, as well as the prediction file
+  need to correspond to the sequence specified in the FASTA file.
+
+
+**Output**
+
+This tool generates an extensive accuracy report, stored as a text
+file for subsequent inspection. For an ideal prediction that exactly
+reproduces the annotation, the output should look like the following
+(where sensitivity is the proportion of annotated features
+(nucleotide, exon, transcript, gene) that have been predicted; and specificity 
+the proportion of predicted features that are annotated):
+
+Evaluation
+  on coding nucleotide level:
+    sensitivity: 100.00%
+
+    specificity: 100.00%
+
+  on coding exon level:
+    sensitivity: 100.00% (missing exons: 0.00%)
+
+    specificity: 100.00% (wrong exons:   0.00%)
+
+  on coding transcript level:
+    sensitivity: 100.00% 
+
+    specificity: 100.00% 
+
+  on gene level:
+    sensitivity: 100.00%  (missing genes: 0.00%)
+
+    specificity: 100.00%  (wrong genes: 0.00%)
+    
+
+  TIS:
+    sensitivity: 100.00%
+    
+    specificity: 100.00%
+
+  STOP:
+    sensitivity: 100.00%
+    
+    specificity: 100.00%
+
+
+
+------
+
+
+**About formats**
+
+
+**FASTA format** A sequence in FASTA format begins with a single-line
+description, followed by lines of sequence data. The description line
+is distinguished from the sequence data by a "greater than" (>) symbol
+in the first column. The token until the first space or the end of the 
+line is used as an identifier for the sequence. The remainder of the 
+description line is ignored.
+
+An example sequence in FASTA format is:
+
+>CHR1
+
+CCCTAAACCCTAAACCCTAAACCCTAAACCTCTGAATCCTTAATCCCTAAATCCCTAAAT
+CTTTAAATCCTACATCCATGAATCCCTAAATACCTAATTCCCTAAACCCGAAACCGGTTT
+CTCTGGTTGAAAATCATTGTGTATATAATGATAATTTTATCGTTTTTATGTAATTGCTTA
+TTGTTGTGTGTAGATTTTTTAAAAATATCATTTGAGGTCAATACAAATCCTATTTCTTGT
+GGTTTTCTTTCCTTCACTTAGCTATGGATGGTTTATCTTCATTTGTTATATTGGATACAA
+GCTTTGCTACGATCTACATTTGGGAATGTGAGTCTCTTATTGTAACCTTAGGGTTGGTTT
+ATCTCAAGAATCTTATTAATTGTTTGGACTGTTTATGTTTGGACATTTATTGTCATTCTT
+ACTCCTTTGTGGAAATGTTTGTTCTATCAATTTATCTTTTGTGGGAAAATTATTTAGTTG
+TAGGGATGAAGTCTTTCTTCGTTGTTGTTACGCTTGTCATCTCATCTCTCAATGATATGG
+GATGGTCCTTTAGCATTTATTCTGAAGTTCTTCTGCTTGATGATTTTATCCTTAGCCAAA
+AGGATTGGTGGTTTGAAGACACATCATATCAAAAAAGCTATCGCCTCGACGATGCTCTAT
+TTCTATCCTTGTAGCACACATTTTGGCACTCAAAAAAGTATTTTTAGATGTTTGTTTTGC
+...
+
+**GFF3 format** General Feature Format is a format for describing genes
+and other features associated with DNA, RNA, and protein sequences. GFF
+lines have nine tab-separated fields:
+
+    1. seqname - The name of the chromosome or scaffold (e.g., chr1, chrY_random).
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. (The first base on a chromosome is numbered 1.)
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Defines the strand - either '+' or '-'.
+    8. frame - If the feature is a coding exon, *frame* should be a number between 0 and 2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+For more information see http://www.sequenceontology.org/gff3.shtml

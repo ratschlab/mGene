@@ -1,0 +1,24 @@
+#!/bin/bash
+# 
+
+for parm in "$@" ; do
+  if test "$parm" = "--help" || test "$parm" = "-help" || test "$parm" = "-h" ; then
+    cat << EOF
+Configuration:
+  -matlab						use matlab interpreter 
+  -h, -help, --help             display this help and exit
+
+EOF
+    exit 0
+  fi
+done # for parm in ...
+
+
+
+
+# Use this before starting a check
+echocheck() {
+  echo "============ Checking for $@ ============" >> "$TMPLOG"
+  echo ${_echo_n} "Checking for $@ ... ${_echo_c}"
+}
+
