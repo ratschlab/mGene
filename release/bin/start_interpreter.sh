@@ -12,7 +12,7 @@
 
 set -e
 
-. `dirname $0`/mgene_config.sh 
+. `dirname $0`/../src/mgene_config.sh 
 
 export LD_LIBRARY_PATH=${SHOGUN_PATH}:${LD_LIBRARY_PATH}
 export DYLD_LIBRARY_PATH=${SHOGUN_PATH}:${LD_LIBRARY_PATH}
@@ -43,7 +43,7 @@ if [ "$INTERPRETER" == 'matlab' ];
   then
 #	echo "global SHELL_INTERPRETER_INVOKE; SHELL_INTERPRETER_INVOKE=1; addpath $MGENE_SRC_PATH; paths; try, $1($2); catch; fprintf(2, '$1 failed\n') ; global MATLAB_RETURN_FILE; MATLAB_RETURN_FILE=-1 ; end ; exit ;"
   	## old ##${MATLAB_BIN_PATH} -r "global SHELL_INTERPRETER_INVOKE; SHELL_INTERPRETER_INVOKE=1; addpath $MGENE_SRC_PATH; paths; try, $1($2); catch; fprintf(2, '$1 failed\n') ; global MATLAB_RETURN_FILE; MATLAB_RETURN_FILE=-1 ; end ; exit ;" || (echo starting Matlab failed; rm -f $MATLAB_RETURN_FILE; exit -1) ;
-  	${MATLAB_BIN_PATH} -r "dbstop error; addpath `dirname $0`; run_matlab_command('$1', '$MGENE_SRC_PATH', $2)" || (echo starting Matlab failed; rm -f $MATLAB_RETURN_FILE; exit -1) ;
+  	${MATLAB_BIN_PATH} $MATLAB_OPTS -r "dbstop error; addpath `dirname $0`; run_matlab_command('$1', '$MGENE_SRC_PATH', $2)" || (echo starting Matlab failed; rm -f $MATLAB_RETURN_FILE; exit -1) ;
   #${MATLAB_BIN_PATH} -r "global SHELL_INTERPRETER_INVOKE; SHELL_INTERPRETER_INVOKE=1; addpath $MGENE_SRC_PATH; mgene_config; dbstop error; $1($2) ; exit ;" || (echo starting Matlab failed; rm -f $MATLAB_RETURN_FILE; exit -1) ;
 fi
 
