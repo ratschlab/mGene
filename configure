@@ -1,8 +1,21 @@
 #!/bin/bash
 # 
 
-test_shogun() {
-	LD_LIBRARY_PATH=$SHOGUN_PATH matlab -r "addpath $SHOGUN_PATH; try, x = sg('get_version'); fprintf('sg_test_succ'); catch, fprintf('sg_test_failed'); end, exit" | grep "sg_test"
+## default values
+################################################################################
+USE_MATLAB=yes
+USE_CPLEX=yes
+
+
+function test_shogun()
+{
+	if test "$USE_MATLAB" = yes
+	then
+		LD_LIBRARY_PATH=$SHOGUN_PATH $MATLAB_BIN_PATH $MATLAB_OPTS -r "addpath $SHOGUN_PATH; try, x = sg('get_version'); fprintf('\nsg_test_succ\n'); end, exit" | grep "sg_test"
+	else # test "$USE_OCTAVE" = yes
+		#TODO adapt to octave 
+		echo sg_test_failed
+	fi
 }
 ## parse parameters
 ################################################################################
@@ -21,10 +34,10 @@ done # for parm in ...
 for ac_option do
 	case "$ac_option" in
   		-matlab)
-		use_matlab=yes;
+		USE_MATLAB=yes;
 		;;
 		-octave)
-		use_octave=yes;
+		USE_OCTAVE=yes;
 		;;
 		*)
 		die "Unknown parameter: $ac_option"
@@ -37,38 +50,55 @@ done
 ################################################################################
 echo '#!/bin/bash' 									> mgene_config.sh
 echo 												>> mgene_config.sh
-if test "$use_matlab" = yes
+if test "$USE_MATLAB" = yes
 then
 	echo use matlab interpreter
 	echo export INTERPRETER=matlab 					>> mgene_config.sh
 	# the binary that is executed when starting matlab
-	echo export MATLAB_BIN_PATH=matlab 				>> mgene_config.sh
+	MATLAB_BIN_PATH=`which matlab`
+	echo export MATLAB_BIN_PATH=$MATLAB_BIN_PATH 	>> mgene_config.sh
+	MATLAB_OPTS="-nojvm -nosplash"
+	echo export MATLAB_OPTS=\"$MATLAB_OPTS\"		>> mgene_config.sh
 fi
+if test "$USE_OCTAVE" = yes
+then
+	echo use octave interpreter
+	echo export INTERPRETER=octave					>> mgene_config.sh
+	# the binary that is executed when starting matlab
+	OCTAVE_BIN_PATH=`which octave`
+	echo export OCTAVE_BIN_PATH=$OCTAVE_BIN_PATH 	>> mgene_config.sh
+	MATLAB_OPTS="-nojvm -nosplash"
+	echo export MATLAB_OPTS=$MATLAB_OPTS		    >> mgene_config.sh
+fi
+
 
 # path to mgene source code
 MGENE_SRC_PATH=`pwd`
 echo export MGENE_SRC_PATH=$MGENE_SRC_PATH			>> mgene_config.sh
 
+
+# find shogun mex files and try to run
 SHOGUN_PATH=`pwd`/shogun
 if ! test -f $SHOGUN_PATH/sg.mexa64
 then 
-	echo shogun mex file not found
+	echo Error: shogun mex file not found
 	echo file $SHOGUN_PATH/sg.mexa64 missing
 	echo please create a link to the shogun mex file 
+	exit 1
 else
-	#SG_TEST_RES=`LD_LIBRARY_PATH=shogun/ matlab -r "addpath shogun/; try, x = sg('get_version'); fprintf('sg_test_succ'); catch, fprintf('sg_test_failed'); end, exit" | grep "sg_test"`
 	SG_TEST_RES=`test_shogun`
-	echo $SG_TEST_RES
+	echo
 	if ! test "$SG_TEST_RES" = sg_test_succ
 	then 
-		echo found shogun mex file, but could not run it \(libraries missing?\)
-		ldd $SHOGUN_PATH/sg.mexa64
+		echo Error: found shogun mex file, but could not run it \(libraries missing?\)
+		echo "ldd $SHOGUN_PATH/sg.mexa64": 
+		LD_LIBRARY_PATH=$SHOGUN_PATH ldd $SHOGUN_PATH/sg.mexa64 | grep shogun
+		exit 1
 	fi
 fi
+
 echo export SHOGUN_PATH=$SHOGUN_PATH 				>> mgene_config.sh
-echo export OCTAVE_BIN_PATH=$OCTAVE_BIN_PATH 		>> mgene_config.sh
 echo export OPTIMIZER=$OPTIMIZER 					>> mgene_config.sh
 echo export OPTIMIZER_PATH=$OPTIMIZER_PATH 			>> mgene_config.sh
-echo export OPTIMIZER_TOOLBOX_PATH=$OPTIMIZER_TOOLBOX_PATH >> mgene_config.sh
 
 
