@@ -13,9 +13,17 @@ function test_shogun()
 	then
 		LD_LIBRARY_PATH=$SHOGUN_PATH $MATLAB_BIN_PATH $MATLAB_OPTS -r "addpath $SHOGUN_PATH; try, x = sg('get_version'); fprintf('\nsg_test_succ\n'); end, exit" | grep "sg_test"
 	else # test "$USE_OCTAVE" = yes
-		#TODO adapt to octave 
-		echo sg_test_failed
+		LD_LIBRARY_PATH=$SHOGUN_PATH echo "addpath $SHOGUN_PATH; try, x = sg('get_version'); fprintf('\nsg_test_succ\n'); end, exit" | $OCTAVE_BIN_PATH $OCTAVE_OPTS | grep "sg_test"
 	fi
+}
+function echo_setpath()
+{
+	echo
+	echo did not find $1
+	echo please edit `pwd`/mgene_config.sh
+	echo and set the $2 variable to the 
+	echo appropriate path
+	echo
 }
 ## parse parameters
 ################################################################################
@@ -23,7 +31,8 @@ for parm in "$@" ; do
 	if test "$parm" = "--help" || test "$parm" = "-help" || test "$parm" = "-h" ; then
 		cat << EOF
 Configuration:
-  -matlab						use matlab interpreter 
+  -matlab, -octave				choose interpreter
+  -cplex, -mosek				choose QP-solver
   -h, -help, --help             display this help and exit
 
 EOF
@@ -35,9 +44,19 @@ for ac_option do
 	case "$ac_option" in
   		-matlab)
 		USE_MATLAB=yes;
+		USE_OCTAVE=no;
 		;;
 		-octave)
 		USE_OCTAVE=yes;
+		USE_MATLAB=no;
+		;;
+		-cplex)
+		USE_CPLEX=yes;
+		USE_MOSEK=no;
+		;;
+		-mosek)
+		USE_MOSEK=yes;
+		USE_CPLEX=no;
 		;;
 		*)
 		die "Unknown parameter: $ac_option"
@@ -48,8 +67,11 @@ done
 
 ## write mgene_config file
 ################################################################################
+
 echo '#!/bin/bash' 									> mgene_config.sh
 echo 												>> mgene_config.sh
+
+SHOGUN_PATH=`pwd`/shogun
 if test "$USE_MATLAB" = yes
 then
 	echo use matlab interpreter
@@ -59,6 +81,12 @@ then
 	echo export MATLAB_BIN_PATH=$MATLAB_BIN_PATH 	>> mgene_config.sh
 	MATLAB_OPTS="-nojvm -nosplash"
 	echo export MATLAB_OPTS=\"$MATLAB_OPTS\"		>> mgene_config.sh
+	SG_BIN_PATH=$SHOGUN_PATH/sg.mexa64
+	echo export MEX_BIN=`which mex`			        >> mgene_config.sh
+
+	MATLAB_DIR=`echo "unix('env');quit" | matlab -nojvm -nodisplay | grep '^MATLAB=' | cut -c 8-`
+	MATLAB_INCDIR="$MATLAB_DIR/extern/include"
+	echo export MATLAB_INCDIR=$MATLAB_INCDIR		>> mgene_config.sh
 fi
 if test "$USE_OCTAVE" = yes
 then
@@ -67,8 +95,10 @@ then
 	# the binary that is executed when starting matlab
 	OCTAVE_BIN_PATH=`which octave`
 	echo export OCTAVE_BIN_PATH=$OCTAVE_BIN_PATH 	>> mgene_config.sh
-	MATLAB_OPTS="-nojvm -nosplash"
-	echo export MATLAB_OPTS=$MATLAB_OPTS		    >> mgene_config.sh
+	OCTAVE_OPTS=
+	echo export OCTAVE_OPTS=$OCTAVE_OPTS		    >> mgene_config.sh
+	echo export MEX_BIN=`which mkoctfile`			>> mgene_config.sh
+	SG_BIN_PATH=$SHOGUN_PATH/sg.oct
 fi
 
 
@@ -78,27 +108,40 @@ echo export MGENE_SRC_PATH=$MGENE_SRC_PATH			>> mgene_config.sh
 
 
 # find shogun mex files and try to run
-SHOGUN_PATH=`pwd`/shogun
-if ! test -f $SHOGUN_PATH/sg.mexa64
+if ! test -f $SG_BIN_PATH
 then 
+	echo
 	echo Error: shogun mex file not found
-	echo file $SHOGUN_PATH/sg.mexa64 missing
+	echo file $SG_BIN_PATH missing
 	echo please create a link to the shogun mex file 
-	exit 1
+	echo
 else
 	SG_TEST_RES=`test_shogun`
 	echo
 	if ! test "$SG_TEST_RES" = sg_test_succ
 	then 
-		echo Error: found shogun mex file, but could not run it \(libraries missing?\)
-		echo "ldd $SHOGUN_PATH/sg.mexa64": 
-		LD_LIBRARY_PATH=$SHOGUN_PATH ldd $SHOGUN_PATH/sg.mexa64 | grep shogun
-		exit 1
+		echo Error: found shogun mex file, but could 
+		echo not run it \(libraries missing?\)
+		echo "ldd $SG_BIN_PATH": 
+		echo
+		LD_LIBRARY_PATH=$SHOGUN_PATH ldd $SG_BIN_PATH | grep shogun
+		echo
 	fi
 fi
 
 echo export SHOGUN_PATH=$SHOGUN_PATH 				>> mgene_config.sh
-echo export OPTIMIZER=$OPTIMIZER 					>> mgene_config.sh
-echo export OPTIMIZER_PATH=$OPTIMIZER_PATH 			>> mgene_config.sh
-
+if test "$USE_CPLEX" = yes 
+then
+	echo export OPTIMIZER=cplex 					>> mgene_config.sh
+	if test -n $ILOG_LICENSE_FILE; then
+		echo_setpath "cplex license file" ILOG_LICENSE_FILE
+	fi
+	echo export ILOG_LICENSE_FILE=$ILOG_LICENSE_FILE>> mgene_config.sh
+	
+	OPTIMIZER_PATH=`which cplex`
+	if test -n $OPTIMIZER_PATH; then
+		echo_setpath "cplex binary" OPTIMIZER_PATH
+	fi
+	echo export OPTIMIZER_PATH=$OPTIMIZER_PATH 		>> mgene_config.sh
+fi
 

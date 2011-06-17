@@ -21,4 +21,5 @@ echo ${PROG}: This program is part of mGene version 0.1 beta.
 echo Please make sure you read the DISCLAIMER.
 echo
 
-exec ${DIR}/start_interpreter.sh ${PROG} "`${DIR}/genarglist.sh $@`"
+ARGLIST=`${DIR}/genarglist.sh $@`
+exec ${DIR}/start_interpreter.sh ${PROG} "$ARGLIST"
