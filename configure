@@ -6,16 +6,6 @@
 USE_MATLAB=yes
 USE_CPLEX=yes
 
-
-function test_shogun()
-{
-	if test "$USE_MATLAB" = yes
-	then
-		LD_LIBRARY_PATH=$SHOGUN_PATH $MATLAB_BIN_PATH $MATLAB_OPTS -r "addpath $SHOGUN_PATH; try, x = sg('get_version'); fprintf('\nsg_test_succ\n'); end, exit" | grep "sg_test"
-	else # test "$USE_OCTAVE" = yes
-		LD_LIBRARY_PATH=$SHOGUN_PATH echo "addpath $SHOGUN_PATH; try, x = sg('get_version'); fprintf('\nsg_test_succ\n'); end, exit" | $OCTAVE_BIN_PATH $OCTAVE_OPTS | grep "sg_test"
-	fi
-}
 function echo_setpath()
 {
 	echo
@@ -75,7 +65,8 @@ SHOGUN_PATH=`pwd`/shogun
 if test "$USE_MATLAB" = yes
 then
 	echo use matlab interpreter
-	echo export INTERPRETER=matlab 					>> mgene_config.sh
+	INTERPRETER=matlab
+	echo export INTERPRETER=$INTERPRETER 			>> mgene_config.sh
 	# the binary that is executed when starting matlab
 	MATLAB_BIN_PATH=`which matlab`
 	echo export MATLAB_BIN_PATH=$MATLAB_BIN_PATH 	>> mgene_config.sh
@@ -91,13 +82,14 @@ fi
 if test "$USE_OCTAVE" = yes
 then
 	echo use octave interpreter
-	echo export INTERPRETER=octave					>> mgene_config.sh
+	INTERPRETER=octave
+	echo export INTERPRETER=$INTERPRETER			>> mgene_config.sh
 	# the binary that is executed when starting matlab
 	OCTAVE_BIN_PATH=`which octave`
 	echo export OCTAVE_BIN_PATH=$OCTAVE_BIN_PATH 	>> mgene_config.sh
 	OCTAVE_OPTS=
 	echo export OCTAVE_OPTS=$OCTAVE_OPTS		    >> mgene_config.sh
-	echo export MEX_BIN=`which mkoctfile`			>> mgene_config.sh
+	echo export MKOCT_BIN=`which mkoctfile`			>> mgene_config.sh
 	SG_BIN_PATH=$SHOGUN_PATH/sg.oct
 fi
 
@@ -108,6 +100,7 @@ echo export MGENE_SRC_PATH=$MGENE_SRC_PATH			>> mgene_config.sh
 
 
 # find shogun mex files and try to run
+echo export SHOGUN_PATH=$SHOGUN_PATH 				>> mgene_config.sh
 if ! test -f $SG_BIN_PATH
 then 
 	echo
@@ -116,7 +109,7 @@ then
 	echo please create a link to the shogun mex file 
 	echo
 else
-	SG_TEST_RES=`test_shogun`
+	SG_TEST_RES=`./check_shogun.sh`
 	echo
 	if ! test "$SG_TEST_RES" = sg_test_succ
 	then 
@@ -129,17 +122,16 @@ else
 	fi
 fi
 
-echo export SHOGUN_PATH=$SHOGUN_PATH 				>> mgene_config.sh
 if test "$USE_CPLEX" = yes 
 then
 	echo export OPTIMIZER=cplex 					>> mgene_config.sh
-	if test -n $ILOG_LICENSE_FILE; then
+	if test -z $ILOG_LICENSE_FILE; then
 		echo_setpath "cplex license file" ILOG_LICENSE_FILE
 	fi
 	echo export ILOG_LICENSE_FILE=$ILOG_LICENSE_FILE>> mgene_config.sh
 	
 	OPTIMIZER_PATH=`which cplex`
-	if test -n $OPTIMIZER_PATH; then
+	if test -z $OPTIMIZER_PATH; then
 		echo_setpath "cplex binary" OPTIMIZER_PATH
 	fi
 	echo export OPTIMIZER_PATH=$OPTIMIZER_PATH 		>> mgene_config.sh

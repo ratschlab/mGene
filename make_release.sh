@@ -6,6 +6,7 @@ CURRENT=`pwd`
 mkdir -p release/src
 mkdir -p release/src/auxiliary_data/
 mkdir -p release/src/shared_tools/
+mkdir -p release/src/parsegff/
 
 sh copy_files.sh
 

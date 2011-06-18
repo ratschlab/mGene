@@ -20,11 +20,18 @@ rsync -a ~/svn/tools/prob_plif release/src/shared_tools/
 rsync -a /fml/ag-raetsch/share/software/samtools/ release/src/samtools/
 
 cp ~/svn/projects/mGene_core/auxiliary_data/add_reads_from_bam.m release/src/auxiliary_data/
+GFF_DIR=/fml/ag-raetsch/home/vipin/svn/projects/genefinding/parsegff
+cp $GFF_DIR/CurateGenes.m release/src/parsegff/
+cp $GFF_DIR/GFFParser.py release/src/parsegff/
+cp $GFF_DIR/arrange_genes.m release/src/parsegff/
+cp GFFParser.sh release/src/parsegff/
 
 # modified files
 cp get_base_dir.m_template release/src/get_base_dir.m
 cp paths.m_template release/src/paths.m
+cp shogun_setings.m_template release/src/shogun_settings.m
 cp Makefile release/src/Makefile
 cp configure release/src/configure
 cp cplex_license.m release/src/solver/cplex_license.m
 cp check_shogun.sh release/src/check_shogun.sh
+cp check_solver.sh release/src/check_solver.sh

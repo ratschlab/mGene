@@ -52,10 +52,9 @@ echo 1a. read DNA fasta file and create a genome information object \(GIO\) \[Lo
 echo "${BINDIR}/genometool ${FASTA_INPUT} ${RESULTDIR}/elegans.gio "
 ${BINDIR}/genometool ${FASTA_INPUT} ${FASTA_DIR} ${RESULTDIR}/elegans.gio/log ${RESULTDIR}/elegans.gio #> ${RESULTDIR}/elegans-genometool.log
 
+mkdir ${RESULTDIR}/elegans.anno/
 echo 1b. load the genome annotation in GFF3 format \(format version = wormbase\), create an annotation object \[Log file in ${RESULTDIR}/elegans-gff2anno.log\]
-echo "${BINDIR}/gff2anno ${RESULTDIR}/elegans.gio ${GFF3_INPUT} ${RESULTDIR}/elegans.anno wormbase"
-${BINDIR}/gff2anno ${RESULTDIR}/elegans.gio ${GFF3_INPUT} ${RESULTDIR}/elegans.anno/logfile ${RESULTDIR}/elegans.anno wormbase "-" "-" "-" || exit -1
-#${BINDIR}/gff2anno ${RESULTDIR}/elegans.gio ${GFF3_INPUT} ${RESULTDIR}/elegans.anno/logfile ${RESULTDIR}/elegans.anno wormbase "-" "-" "-" #> ${RESULTDIR}/elegans-gff2anno.log 
+../src/parsegff/GFFParser.sh ${GFF3_INPUT} ${RESULTDIR}/elegans.anno/genes.mat ${RESULTDIR}/elegans.gio
 
 echo
 echo %%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,16 +63,16 @@ echo %%%%%%%%%%%%%%%%%%%%%%%%
 echo
 
 echo 2a. generate labels usable for training the signal detector for acceptor splice sites \[Log file in ${RESULTDIR}/elegans-anno2signallabel-acc.log\]
-${BINDIR}/anno2signallabel ${RESULTDIR}/elegans.gio ${RESULTDIR}/elegans.anno ${RESULTDIR}/elegans-acc-label.bspf/ acc > ${RESULTDIR}/elegans-anno2signallabel-acc.log
+${BINDIR}/anno2signallabel ${RESULTDIR}/elegans-anno2signallabel-acc.log ${RESULTDIR}/elegans.anno ${RESULTDIR}/elegans.gio ${RESULTDIR}/elegans-acc-label.bspf/signal_label  ${RESULTDIR}/elegans-acc-label.bspf/ acc #> ${RESULTDIR}/elegans-anno2signallabel-acc.log
 # Alternative: output in human readable format (much slower)
 #${BINDIR}/mgene_anno2signallabel ${RESULTDIR}/elegans.gio ${RESULTDIR}/elegans.anno ${RESULTDIR}/elegans-acc-label.spf acc
 
 echo 2b. train the signal detector \[Log file in ${RESULTDIR}/elegans-signal_train-acc.log\]
 rm -rf ${RESULTDIR}/elegans-acc.tsp
-${BINDIR}/signal_train ${RESULTDIR}/elegans.gio ${RESULTDIR}/elegans-acc-label.bspf/ ${RESULTDIR}/elegans-acc.tsp > ${RESULTDIR}/elegans-signal_train-acc.log
+${BINDIR}/signal_train  '-' ${RESULTDIR}/elegans-acc-label.bspf/ acc ${RESULTDIR}/elegans.gio ${RESULTDIR}/elegans-acc.tsp/log  ${RESULTDIR}/elegans-acc.tsp #> ${RESULTDIR}/elegans-signal_train-acc.log
 
 echo 2c. use signal detector to predict on genomic DNA \[Log file in ${RESULTDIR}/elegans-signal_predict-acc.log\]
-${BINDIR}/signal_predict ${RESULTDIR}/elegans.gio ${RESULTDIR}/elegans-acc.tsp ${RESULTDIR}/elegans-acc-prediction.bspf/ > ${RESULTDIR}/elegans-signal_predict-acc.log
+${BINDIR}/signal_predict ${RESULTDIR}/elegans.gio ${RESULTDIR}/elegans-acc.tsp ${RESULTDIR}/elegans-acc-prediction.bspf/ #> ${RESULTDIR}/elegans-signal_predict-acc.log
 
 echo 2d. perform evaluation
 ${BINDIR}/signal_eval ${RESULTDIR}/elegans-acc-label.bspf/ ${RESULTDIR}/elegans-acc-prediction.bspf/ | tail -6 

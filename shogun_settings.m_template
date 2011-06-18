@@ -1,6 +1,5 @@
 function [sg_path, envstr] = shogun_settings()
 
-home=getenv('HOME');
-home = deblank(home);
-sg_path = sprintf('%s/svn/projects/mGene_core/shogun', home);
-envstr = sprintf('export LD_LIBRARY_PATH=%s/svn/projects/mGene_core/shogun', home);
+sg_dir=getenv('MGENE_SRC_PATH');
+sg_path = deblank(sg_dir);
+envstr = sprintf('export LD_LIBRARY_PATH=%s', sg_path);
