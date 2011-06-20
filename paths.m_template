@@ -25,4 +25,5 @@ addpath(sprintf('%s/tools/', base_dir));
 addpath(sprintf('%s/utils/', base_dir));
 addpath(sprintf('%s/webserver/', base_dir));
 addpath(sprintf('%s/parsegff/', base_dir));
+addpath(sprintf('%s/shogun/', base_dir));
 

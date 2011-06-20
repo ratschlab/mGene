@@ -29,7 +29,7 @@ cp GFFParser.sh release/src/parsegff/
 # modified files
 cp get_base_dir.m_template release/src/get_base_dir.m
 cp paths.m_template release/src/paths.m
-cp shogun_setings.m_template release/src/shogun_settings.m
+cp shogun_settings.m_template release/src/shogun_settings.m
 cp Makefile release/src/Makefile
 cp configure release/src/configure
 cp cplex_license.m release/src/solver/cplex_license.m
