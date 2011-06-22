@@ -14,34 +14,45 @@ echo
 OPT=$1
 if [ -z "$OPT" ]; then OPT="--help"; fi 
 
-case "$OPT" in
-	"--help")
-  		echo Usage: $0 small\|nGASP
-  		echo "   or:" $0 --help
-  		false
-	;;
-	"small")
-  		echo Note: Running this script takes about 60 minutes \(on a single CPU\).
-  		FASTA_INPUT=data/elegans.fasta 
-  		FASTA_DIR=data/ 
-  		GFF3_INPUT=data/elegans.gff3 
-	;;
-	"nGASP")
-		echo Note: Running this script takes 10-20 hours \(on a single CPU\).
-		FASTA_INPUT=data/nGASP-Train.fasta 
-		FASTA_DIR=data/ 
-		GFF3_INPUT=data/nGASP-Train.gff3 
-	;;
-	*)
-  		echo invalid parameter
-  		false
-	;;
-esac
-
+for OPT in $* 
+do
+	case "$OPT" in
+		"--help")
+	  		echo Usage: $0 small\|nGASP \[--use_rna_seq\]
+	  		echo "   or:" $0 --help
+	  		false
+		;;
+		"--use_rna_seq")
+			USE_BAM=yes
+			BAM_FILE=data/elegans_chrII.bam
+		;;
+		"small")
+	  		echo Note: Running this script takes about 60 minutes \(on a single CPU\).
+			TRAIN_SET=small
+	  		FASTA_INPUT=data/elegans.fasta 
+	  		FASTA_DIR=data/ 
+	  		GFF3_INPUT=data/elegans.gff3 
+		;;
+		"nGASP")
+			echo Note: Running this script takes 10-20 hours \(on a single CPU\).
+			TRAIN_SET=nGASP
+			FASTA_INPUT=data/nGASP-Train.fasta 
+			FASTA_DIR=data/ 
+			GFF3_INPUT=data/nGASP-Train.gff3 
+		;;
+		*)
+	  		echo invalid parameter
+	  		false
+		;;
+	esac
+done
 
 
 BINDIR=../bin
-RESULTDIR=./results-2-$OPT
+RESULTDIR=./results-2-${TRAIN_SET}
+if test "$USE_BAM" = yes; then
+	RESULTDIR=${RESULTDIR}BAM
+fi
 mkdir -p $RESULTDIR
 
 echo All results can be found in $RESULTDIR
@@ -129,7 +140,29 @@ echo % Gene Prediction %
 echo %%%%%%%%%%%%%%%%%%%
 
 LSL_DIR=${RESULTDIR}/elegans-lsl
-GENE_TRAIN_OPTS="use_rna_seq_for_label_gen=-1"
+if test "$USE_BAM" = yes; then
+	GENE_TRAIN_OPTS="use_rna_seq_for_label_gen=-1"
+	# exon track
+	GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;track_function=add_reads_from_bam"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;track_file=$BAM_FILE"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;track_name=exon_track"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;track_param=exon_track"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;track_monoton_function=exon_increase"
+    # intron_track
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;track_function=add_reads_from_bam"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;track_file=$BAM_FILE"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;track_name=intron_track"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;track_param=intron_track"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;track_monoton_function=intron_increase"
+    # intron_list
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;segment_feature_function=add_reads_from_bam"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;segment_feature_file=$BAM_FILE"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;segment_feature_name=intron_list"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;segment_feature_param=intron_list"
+    GENE_TRAIN_OPTS="$GENE_TRAIN_OPTS;segment_feature_monoton_function=intron_increase"
+else
+	GENE_TRAIN_OPTS="use_rna_seq_for_label_gen=-1"
+fi
 FN_DONE=$LSL_DIR/TRAIN_DONE
 if test -f $FN_DONE; then 
 	echo gene_train already done

@@ -3,6 +3,9 @@
 
 source `dirname $0`/../mgene_config.sh
 
+### TODO: either make sure that the right python/scipy version is available in the configure file
+### 		or adjust the savemat call (the problem is that the "oned_as" keyword does not 
+### 		exist in all scipy versions) to work with different python versions
 export PYTHONPATH=/fml/ag-raetsch/home/vipin/lib/python2.5/site-packages/
 
 python `dirname $0`/GFFParser.py $1 $2
