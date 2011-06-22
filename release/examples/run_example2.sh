@@ -4,7 +4,7 @@ set -e
 
 PROG=`basename $0`
 
-echo ${PROG}: This program is part of mGene version 0.1 beta.
+echo ${PROG}: This program is part of mGene version 0.2.
 echo Please make sure you read the DISCLAIMER.
 echo
 echo This script trains all six signal, five content predictors, and the gene predictor.
