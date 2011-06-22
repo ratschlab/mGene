@@ -31,8 +31,9 @@ then
 fi
 if [ "$1" == 'nGASP' ];
 then
-  echo Note: Running this script takes about 1h minutes \(on a single CPU\).
+  echo Note: Running this script takes about 60 minutes \(on a single CPU\).
   FASTA_INPUT=data/nGASP-Train.fasta 
+  FASTA_DIR=data/ 
   GFF3_INPUT=data/nGASP-Train.gff3 
 fi
 
@@ -73,9 +74,6 @@ ${BINDIR}/signal_train  '-' ${RESULTDIR}/elegans-acc-label.bspf/ acc ${RESULTDIR
 echo 2c. use signal detector to predict on genomic DNA \[Log file in ${RESULTDIR}/elegans-signal_predict-acc.log\]
 ${BINDIR}/signal_predict ${RESULTDIR}/elegans-acc.tsp ${RESULTDIR}/elegans.gio  ${RESULTDIR}/elegans-acc-prediction.bspf/log ${RESULTDIR}/elegans-acc-prediction.bspf/ 1 > ${RESULTDIR}/elegans-signal_predict-acc.log
 
-echo 2d. perform evaluation
-${BINDIR}/signal_eval ${RESULTDIR}/elegans-acc-label.bspf/ ${RESULTDIR}/elegans-acc-prediction.bspf/ | tail -6 
-
 
 echo
 echo %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,9 +91,6 @@ ${BINDIR}/content_train ${RESULTDIR}/elegans-cds_exon-label.bcpf/log ${RESULTDIR
 
 echo 3c. use content detector to predict on genomic DNA \[Log file in ${RESULTDIR}/elegans-content_predict-cds_exon.log\]
 ${BINDIR}/content_predict ${RESULTDIR}/elegans-cds_exon.tcp ${RESULTDIR}/elegans.gio ${RESULTDIR}/elegans-cds_exon-prediction.bspf/log ${RESULTDIR}/elegans-cds_exon-prediction.bspf/ 1  > ${RESULTDIR}/elegans-content_predict-cds_exon.log
-
-echo 3d. perform evaluation
-${BINDIR}/content_eval ${RESULTDIR}/elegans-cds_exon-label.bcpf/log ${RESULTDIR}/elegans-cds_exon-label.bcpf/ ${RESULTDIR}/elegans-cds_exon-prediction.bspf/log ${RESULTDIR}/elegans-cds_exon-prediction.bspf/ ${RESULTDIR}/elegans-cds_exon-prediction.bspf/content_info | tail -6 
 
 echo
 echo %%%%%%%%

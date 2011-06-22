@@ -4,10 +4,6 @@ include mgene_config.sh
 export GENOME="../../genome"
 export SAMDIR="../../samtools"
 
-RES_SG := $(shell sh check_shogun.sh)
-RES_QP := $(shell sh check_solver.sh)
-
-
 ## compile subfolders
 ################################################################################
 make_subfolders:
@@ -34,11 +30,7 @@ make_subfolders:
 check_shogun:
 	@echo "##################################################" 
 	@echo "# Trying to run shogun binary ..."
-ifeq ($(RES_SG),sg_test_succ)
-	@echo "# success!"
-else
-	@echo "# failure!"
-endif
+	@echo "# $(shell sh check_shogun.sh)!"
 	@echo  "##################################################" 
 
 ## check solver
@@ -46,11 +38,6 @@ endif
 check_solver:
 	@echo "##################################################" 
 	@echo "# Trying to run QP solver ..."
-	$(if $(eq $(shell sh check_solver.sh),"qp_test_succ"),@echo "# success!",@echo $(shell sh check_solver.sh))
-ifeq ($(shell sh check_solver.sh),qp_test_succ)
-	@echo "# success!"
-else
-	@echo "# failure!"
-endif
+	@echo "# $(shell sh check_solver.sh) !"
 	@echo  "##################################################" 
 

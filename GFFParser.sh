@@ -1,9 +1,8 @@
 #!/bin/bash
 ## USAGE: GFFParser.sh <GFF file> <Result file name in .mat extension> <gio>
 
-sh `dirname $0`/../mgene_config.sh
-export PYTHONPATH=~/lib/lib/python2.6/dist-packages/:~/lib/python2.5/site-packages/:~/lib/python/:/fml/ag-raetsch/home/vipin/svn/projects/genefinding/parsegff/
-export PYTHONPATH=/fml/ag-raetsch/home/vipin/lib/python2.5/site-packages/:/fml/ag-raetsch/home/vipin/lib/python/:$PYTHONPATH
+source `dirname $0`/../mgene_config.sh
+export PYTHONPATH=/fml/ag-raetsch/home/vipin/lib/python2.5/site-packages/
 echo 'GFF file parsing started...'
 ## %%% Python GFF parsing started%%%
 python `dirname $0`/GFFParser.py $1 $2

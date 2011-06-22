@@ -99,6 +99,17 @@ MGENE_SRC_PATH=`pwd`
 echo export MGENE_SRC_PATH=$MGENE_SRC_PATH			>> mgene_config.sh
 
 
+# check python version
+if $PYTHON -V >/dev/null 2>&1
+then
+    PYVER="`$PYTHON -V 2>&1 | grep Python | cut -f 2 -d ' '`"
+    echo "${PYVER}"
+    PYVER="`echo $PYVER | cut -f 1-2 -d '.'`"
+else
+    echo "python not detected (required)"
+fi
+
+
 # find shogun mex files and try to run
 echo export SHOGUN_PATH=$SHOGUN_PATH 				>> mgene_config.sh
 if ! test -f $SG_BIN_PATH
@@ -111,7 +122,7 @@ then
 else
 	SG_TEST_RES=`./check_shogun.sh`
 	echo
-	if ! test "$SG_TEST_RES" = sg_test_succ
+	if ! test "$SG_TEST_RES" = "sg_test: success"
 	then 
 		echo Error: found shogun mex file, but could 
 		echo not run it \(libraries missing?\)
