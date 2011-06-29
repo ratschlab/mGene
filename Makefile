@@ -19,10 +19,12 @@ make_subfolders:
 	@echo "# compiling ngs tools"
 	@echo "##################################################" 
 	$(MAKE) -C samtools/
+ifeq ($(OPTIMIZER),cplex)
 	@echo "##################################################" 
 	@echo "# compiling QP solver tools"
 	@echo "##################################################" 
 	$(MAKE) -C solver/
+endif
 
 	
 ## check shogun

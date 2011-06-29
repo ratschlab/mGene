@@ -103,14 +103,14 @@ mkdir -p ${CONT_DIR}/trained_predictor
 mkdir -p ${CONT_DIR}/prediction
 
 echo 3a. generate labels usable for training the content detector for $content \[Log file in ${CONT_DIR}/anno2contentlabel.log\]
-${BINDIR}/anno2contentlabel ${ANNO_DIR}/log  ${ANNO_DIR} ${GENOME_DIR} ${CONT_DIR}/label/log ${CONT_DIR}/label $content all_other default > ${CONT_DIR}/anno2contentlabel.log
+${BINDIR}/anno2contentlabel ${ANNO_DIR}/log  ${ANNO_DIR} ${GENOME_DIR} ${CONT_DIR}/label/log ${CONT_DIR}/label $content all_other default #> ${CONT_DIR}/anno2contentlabel.log
 
 echo 3b. train the content detector \[Log file in ${CONT_DIR}/content_train.log\]
 rm -rf ${RESULTDIR}/elegans-$content.tcp/
-${BINDIR}/content_train ${CONT_DIR}/label/log ${CONT_DIR}/label $content ${GENOME_DIR} ${ANNO_DIR} ${CONT_DIR}/trained_predictor/log ${CONT_DIR}/trained_predictor 1 > ${CONT_DIR}/content_train.log
+${BINDIR}/content_train ${CONT_DIR}/label/log ${CONT_DIR}/label $content ${GENOME_DIR} ${ANNO_DIR} ${CONT_DIR}/trained_predictor/log ${CONT_DIR}/trained_predictor 1 #> ${CONT_DIR}/content_train.log
 
 echo 3c. use content detector to predict on genomic DNA \[Log file in ${CONT_DIR}/content_predict.log\]
-${BINDIR}/content_predict ${CONT_DIR}/trained_predictor ${GENOME_DIR} ${CONT_DIR}/prediction/log ${CONT_DIR}/prediction 1  > ${CONT_DIR}/content_predict.log
+${BINDIR}/content_predict ${CONT_DIR}/trained_predictor ${GENOME_DIR} ${CONT_DIR}/prediction/log ${CONT_DIR}/prediction 1  #> ${CONT_DIR}/content_predict.log
 
 echo
 echo %%%%%%%%

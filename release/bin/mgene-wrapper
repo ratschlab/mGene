@@ -17,9 +17,11 @@ set -e
 PROG=`basename $0`
 DIR=`dirname $0`
 
-echo ${PROG}: This program is part of mGene version 0.1 beta.
+echo ${PROG}: This program is part of mGene version 0.2.
 echo Please make sure you read the DISCLAIMER.
 echo
 
 ARGLIST=`${DIR}/genarglist.sh $@`
-exec ${DIR}/start_interpreter.sh ${PROG} "$ARGLIST"
+#exec ${DIR}/start_interpreter.sh ${PROG} "$ARGLIST"
+${DIR}/start_interpreter.sh ${PROG} "$ARGLIST"
+exit $?

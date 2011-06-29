@@ -52,6 +52,13 @@ BINDIR=../bin
 RESULTDIR=./results-2-${TRAIN_SET}
 if test "$USE_BAM" = yes; then
 	RESULTDIR=${RESULTDIR}BAM
+	if test "$TRAIN_SET" = nGASP; then
+		echo
+		echo Note: the bam file only covers a small region on chromosome II, 
+		echo therefore, only the small version of this example can be run 
+		echo with the --use_rna_seq option
+		false
+	fi
 fi
 mkdir -p $RESULTDIR
 
@@ -68,6 +75,7 @@ mkdir -p ${GENOME_DIR}
 if ! test -f ${GENOME_DIR}/genome.config; then
 	echo 1a. read DNA fasta file and create a genome information object \(GIO\) \[Log file in ${GENOME_DIR}/genometool.log\]
 	${BINDIR}/genometool ${FASTA_INPUT} ${FASTA_DIR} ${GENOME_DIR}/log ${GENOME_DIR} > ${GENOME_DIR}/genometool.log
+	#if test $? -lt 0; then false; fi
 fi
 
 ANNO_DIR=${RESULTDIR}/elegans.anno
@@ -181,7 +189,7 @@ else
 		${RESULTDIR}/elegans-cds_exon-content/prediction/log ${RESULTDIR}/elegans-cds_exon-content/prediction \
 		${RESULTDIR}/elegans-intron-content/prediction/log ${RESULTDIR}/elegans-intron-content/prediction \
 		${RESULTDIR}/elegans-utr3exon-content/prediction/log ${RESULTDIR}/elegans-utr3exon-content/prediction \
-		${LSL_DIR}/log ${LSL_DIR} $GENE_TRAIN_OPTS #> ${LSL_DIR}/gene_train.log
+		${LSL_DIR}/log ${LSL_DIR} $GENE_TRAIN_OPTS > ${LSL_DIR}/gene_train.log
 	
 	${BINDIR}/start_training '-' '-' ${LSL_DIR}
 	
@@ -205,8 +213,8 @@ else
 		${RESULTDIR}/elegans-cds_exon-content/prediction/log ${RESULTDIR}/elegans-cds_exon-content/prediction \
 		${RESULTDIR}/elegans-intron-content/prediction/log ${RESULTDIR}/elegans-intron-content/prediction \
 		${RESULTDIR}/elegans-utr3exon-content/prediction/log ${RESULTDIR}/elegans-utr3exon-content/prediction \
-		${LSL_DIR}/prediction.gff3 ${LSL_DIR} 1 $GENE_TRAIN_OPTS #> ${LSL_DIR}/gene_predict.log
-
+		${LSL_DIR}/prediction.gff3 ${LSL_DIR} 1 $GENE_TRAIN_OPTS > ${LSL_DIR}/gene_predict.log
+	
 	touch $FN_DONE
 fi
 FN_DONE=$LSL_DIR/GENES_DONE

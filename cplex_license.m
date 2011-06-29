@@ -1,4 +1,4 @@
-function lpenv = cplex_license(tmp1, tmp2)
+function lpenv_ = cplex_license(tmp1, tmp2)
 
 license_file = getenv('ILOG_LICENSE_FILE');
 envstr = sprintf('ILOG_LICENSE_FILE=%s', license_file);
@@ -21,3 +21,4 @@ end ;
 if lpenv==0
 	error('could not get cplex license\n')
 end
+lpenv_ = lpenv;% this is an octave requirement function parameters cannot be global

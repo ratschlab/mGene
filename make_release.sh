@@ -11,16 +11,17 @@ mkdir -p release/src/parsegff/
 sh copy_files.sh
 
 # remove binaries
-cd release
-	find . -name \*.mexa64 -exec rm -rf '{}' ';'
-	find . -name \*.mex -exec rm -rf '{}' ';'
-	find . -name \*.oct -exec rm -rf '{}' ';'
-	find . -name \*.o -exec rm -rf '{}' ';'
-	rm src/samtools/samtools
-cd $CURRENT
+find release -name \*.mexa64 -exec rm -rf '{}' ';'
+find release -name \*.mex -exec rm -rf '{}' ';'
+find release -name \*.oct -exec rm -rf '{}' ';'
+find release -name \*.o -exec rm -rf '{}' ';'
+rm src/samtools/samtools
 
-#RDIR=mgene-0.2.0 ;
-#mkdir -p $RDIR
-#rsync -a release/ $RDIR
-#cd $RDIR && find . -name .svn -exec rm -rf '{}' ';'
+RDIR=mgene-0.2.0 ;
+mkdir -p $RDIR
+rsync -a release/ $RDIR
+find $RDIR -name .*.swp -exec rm -rf '{}' ';'
+find $RDIR -name .svn -exec rm -rf '{}' ';'
+find $RDIR -name cachegrind.* -exec rm -rf '{}' ';'
+find $RDIR -name result.* -exec rm -rf '{}' ';'
 

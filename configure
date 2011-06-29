@@ -90,6 +90,7 @@ then
 	OCTAVE_OPTS=
 	echo export OCTAVE_OPTS=$OCTAVE_OPTS		    >> mgene_config.sh
 	echo export MKOCT_BIN=`which mkoctfile`			>> mgene_config.sh
+	echo export MEX_BIN="echo"				        >> mgene_config.sh
 	SG_BIN_PATH=$SHOGUN_PATH/sg.oct
 fi
 
@@ -140,6 +141,14 @@ then
 		echo_setpath "cplex license file" ILOG_LICENSE_FILE
 	fi
 	echo export ILOG_LICENSE_FILE=$ILOG_LICENSE_FILE>> mgene_config.sh
+	if test -z $CPLEX_INCL; then
+		echo_setpath "cplex include directory" CPLEX_INCL
+	fi
+	echo export CPLEX_INCL=$CPLEX_INCL				>> mgene_config.sh
+	if test -z $CPLEX_LIB; then
+		echo_setpath "cplex lib directory" CPLEX_LIB
+	fi
+	echo export CPLEX_LIB=$CPLEX_LIB				>> mgene_config.sh
 	
 	OPTIMIZER_PATH=`which cplex`
 	if test -z $OPTIMIZER_PATH; then
