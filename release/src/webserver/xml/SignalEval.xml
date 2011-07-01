@@ -1,0 +1,62 @@
+<tool id="signaleval_0.3" name="SignalEval" version="0.3">
+  <description>Computes performance measures based on signal labels and predictions</description>
+  <command>~/bin/octave_start_script.sh "warning('off', 'Octave:precedence-change'); rmpath('/home/galaxy/mgene_galaxy'); addpath('/home/galaxy/svn/projects/mGene_core/'); paths;signal_eval('$label', '$label.extra_files_path', '$predictions', '$predictions.extra_files_path', '$performance');"> $mGene_Log_File ; ~/bin/cleanup_output.sh $mGene_Log_File </command>
+  <inputs>
+    <param format="spf" name="label" type="data" label="Label file in SPF format" help="The label file contains information about the genomic locations at which a given signal occurs. It can be created with 'Anno2SignalLabel'."/>
+    <param format="spf" name="predictions" type="data" label="Signal Predictions in SPF format" help="The prediction file, in signal prediction format (SPF), contains a signal prediction score for each candidate location. It can be generated with 'SignalPredict'."/>
+  </inputs>
+  <outputs>
+    <data format="txt" name="performance" label="Signal prediction performance"/>
+    <data format="txt" name="mGene_Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool takes a label file and a prediction file as input and
+computes several measures of accuracy of the predictions.  In
+particular, the areas under the Receiver-Operator-Curve (ROC) and the
+Precision-Recall-Curve (PRC) are assessed.  Both measures are close to
+1.0 for nearly perfect classification; for random guessing they are
+close to 0.5 (ROC) and 0.0 (PRC), respectively.
+
+Typical values for the area under the ROC curve are between 0.98 and
+0.998 for splice sites, between 0.85 and 0.95 for transcription start
+and cleavage sites, and around 0.95 for translation initation sites
+and stop codons.
+
+------
+
+**Output**
+
+This tool generates a brief accuracy report, stored as a text file for
+human inspection.
+
+--------
+
+**Example**
+
+The evaluation of acceptor splice site predictions may look like this::
+
+  Evaluation for "acc" predictions on 981051 positions
+   * Area under ROC curve: 0.986
+   * Area under PRC curve: 0.854
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+**SPF format** Signal Prediction format was designed for providing information such as labels or predictions for specific genomic locations (with strand information). It has exacty six required fields::
+
+    1. chrom - The name of the chromosome (e.g. chr1, chrY_random).
+    2. signalName - possible choices include tss, tis, acc, don, cdsStop, cleave.
+    3. scoreName - possible choices include label, output, Conf, Conf_Cum
+    4. chromPos - The position in the chromosome. (The first base in a chromosome is numbered 1.)
+    5. strand - Defines the strand - either '+' or '-'.
+    6. score - The score between -infinity and infinity. If scoreName is 'label', then the score should be either -1 or 1.
+
+</help>
+</tool>
+

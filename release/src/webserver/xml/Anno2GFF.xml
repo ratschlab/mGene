@@ -1,0 +1,50 @@
+<tool id="anno2gff" name="Anno2GFF">
+  <description>Generates a GFF3 file from an annotation gene structure object (AGS)</description>
+  <command>~/bin/octave_start_script.sh
+    "setup_mgene; galaxy_anno2gff('$Annotation.extra_files_path', '$gff_output');"
+    >> $Log_File; ~/bin/cleanup_output.sh $Log_File</command>
+  <inputs>
+    
+    <param format="gann" name="Annotation" type="data" label="Genome Annotation in AGS format" help="Genome annotation file in AGS format."/>
+  </inputs>
+  <outputs>
+     <data format="gff3" name="gff_output" label="Genome annotation in GFF3 format"/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+
+  <help>
+
+.. class:: infomark
+
+
+**What it does**
+
+This tool writes the annotation gene structure (AGS) to a GFF3 file.
+
+
+.. class:: infomark
+
+**About formats**
+
+**AGS format** Annotation Gene Structure Object is an internal
+structure that efficiently stores the information about transcriptionally
+active regions or genes.
+
+
+**GFF format** General Feature Format is a format for describing genes
+and other features associated with DNA, RNA and Protein sequences. GFF
+lines have nine tab-separated fields::
+
+    1. seqname - Must be a chromosome or scaffold.
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. The first base is numbered 1.
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Valid entries include '+', '-', or '.' (for don't know/care).
+    8. frame - If the feature is a coding exon, frame should be a number between 0-2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+
+</help>
+</tool>

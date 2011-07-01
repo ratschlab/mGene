@@ -1,0 +1,130 @@
+<tool id="genometool_0.3" name="GenomeTool" version="0.3">
+  <description>Creates a genome information object (GIO) from FASTA sequences</description>
+  <command>~/bin/octave_start_script.sh "rmpath('/home/galaxy/mgene_galaxy'); addpath('/home/galaxy/svn/projects/mGene_core/'); paths; genometool(
+    #if $history_vs_pretrained.source=="internal"
+    'genome:$history_vs_pretrained.organism', '', 
+    #else
+    '$history_vs_pretrained.fasta_input', '$history_vs_pretrained.fasta_input.extra_files_path', 
+    #end if
+    '$Genome_Information', '$Genome_Information.extra_files_path');" >> $Log_File; ~/bin/cleanup_output.sh $Log_File</command>
+  <inputs>
+    <conditional name="history_vs_pretrained">
+      <param name="source" type="select" label="Source of genome sequence" help="">
+        <option value="history">From current history</option>
+	<option value="internal">From internal database</option>
+      </param>
+      <when value="history"> 
+	<param format="fasta" name="fasta_input" type="data" label="Genomic Sequence" help="File in FASTA format containing sequences of all chromosomes/contigs belonging to the considered genome."/>
+      </when>
+      <when value="internal"> 
+	<param name="organism" type="select" label="Organism" help="">
+          <option value="c_elegans-ws180">Caenorhabditis elegans (WS180)</option>
+          <option value="d_melanogaster-dm5">Drosophila Melanogaster (DM5)</option>
+          <option value="a_thaliana-tair8">Arabidopsis thaliana (TAIR8)</option>
+
+	  <option value="a_aegypti-AaegL1.53">Aedes aegypti (AaegL1.53)</option>
+          <option value="a_carolinensis-AnoCar1.0.53">Anolis carolinensis (AnoCar1.0.53)</option>
+          <option value="a_gambiae-AgemP3.53">Anopheles gambiae (AgemP3.53)</option>
+       	  <option value="b_taurus-Btau_4.0.53">Bos taurus (Btau_4.0.53)</option>
+	  <option value="c_elegans-ws200">Caenorhabditis elegans (WS200)</option>
+          <option value="c_familiaris-BROADD2.53">Canis familiaris (BROADD2.53)</option>
+	  <option value="c_hoffmanni-choHof1.53">Choloepus hoffmanni (choHof1.53)</option>
+          <option value="c_intestinalis-JGI2.53"> Ciona intestinalis (JGI2.53)</option>
+	  <option value="c_porcellus-GUINEAPIG.53">Cavia porcellus (GUINEAPIG.53)</option>
+          <option value="c_savignyi-CSAV2.0.53">Ciona savignyi (CSAV2.0.53)</option>
+ 	  <option value="d_melanogaster-BDGP5.4.53">Drosophila Melanogaster (BDGP5.4.53)</option>
+          <option value="d_novemcinctus-dasNov2.53">Dasypus novemcinctus (dasNov2.53)</option>
+	  <option value="d_ordii-dipOrd1.53">Dipodomys ordii (dipOrd1.53)</option>         
+	  <option value="d_rerio-ZFISH7.53">Danio rerio (ZFISH7.53)</option>
+	  <option value="e_caballus-EquCab2.53">Equus caballus (EquCab2.53)</option>         
+	  <option value="e_europaeus-HEDGEHOG.53">Erinaceus europaeus (HEDGEHOG.53)</option>
+	  <option value="e_telfairi-TENREC.53">Echinops telfairi (TENREC.53)</option>
+	  <option value="f_catus-CAT.53">Felis catus (CAT.53)</option>
+	  <option value="g_aculeatus-BROADS1.53">Gasterosteus aculeatus (BROADS1.53)</option>
+          <option value="g_gallus-WASHUC2.53">Gallus gallus (WASHUC2.53)</option>
+	  <option value="g_gorilla-gorGor1.53">Gorilla gorilla (gorGor1.53)</option>       
+	  <option value="h_sapiens-NCBI36.53">Homo sapiens (NCBI36.53)</option>
+	  <option value="h_sapiens-NCBI36.54">Homo sapiens (NCBI36.54)</option>
+	  <option value="l_africana-loxAfr2.53">Loxodonta africana (loxAfr2.53)</option>
+	  <option value="m_domestica-BROADO5.53">Monodelphis domestica (BROADO5.53)</option>
+          <option value="m_lucifugus-MICROBAT1.53">Myotis lucifugus (MICROBAT1.53)</option>
+          <option value="m_mulatta-MMUL_1.53">Macaca mulatta (MMUL_1.53)</option>
+	  <option value="m_murinus-micMur1.53">Microcebus murinus (micMur1.53)</option>
+	  <option value="m_musculus-NCBIM37.53">Mus musculus (NCBIM37.53)</option>
+          <option value="o_anatinus-OANA5.53">Ornithorhynchus anatinus (OANA5.53)</option>
+          <option value="o_cuniculus-RABBIT.53">Oryctolagus cuniculus (RABBIT.53)</option>
+          <option value="o_garnettii-BUSHBABY1.53">Otolemur garnettii (BUSHBABY1.53)</option>
+          <option value="o_latipes-MEDAKA1.53">Oryzias latipes (MEDAKA1.53)</option>
+          <option value="o_princeps-pika.53">Ochotona princeps (pika.53)</option>
+          <option value="p_capensis-proCap1.53">Procavia capensis (proCap1.53)</option>
+          <option value="p_pygmaeus-PPYG2.53">Pongo pygmaeus (PPYG2.53)</option>
+          <option value="p_troglodytes-CHIMP2.1.53">Pan troglodytes (CHIMP2.1.53)</option>
+          <option value="p_vampyrus-pteVam1.53">Pteropus vampyrus (pteVam1.53)</option>
+          <option value="r_norvegicus-RGSC3.4.53">Rattus norvegicus (RGSC3.4.53)</option>
+          <option value="s_araneus-COMMON_SHREW1.53">Sorex araneus (COMMON_SHREW1.53)</option>
+  	  <option value="s_cerevisiae-SGD1.01.53">Saccharomyces cerevisiae (SGD1.01.53)</option>
+          <option value="s_tridecemlineatus-SQUIRREL.52">Spermophilus tridecemlineatus (SQUIRREL.52)</option>
+          <option value="t_belangeri-TREESHREW.53">Tupaia belangeri (TREESHREW.53)</option>
+          <option value="t_guttata-taeGut3.2.4.53">Taeniopygia guttata (taeGut3.2.4.53)</option>
+          <option value="t_nigroviridis-TETRAODON8.53">Tetraodon nigroviridis (TETRAODON8.53)</option>
+          <option value="t_rubripes-FUGU4.53">Takifugu rubripes (FUGU4.53)</option>
+          <option value="t_syrichta-tarSyr1.53">Tarsius syrichta (tarSyr1.53)</option>
+          <option value="t_truncatus-turTru1.53">Tursiops truncatus (turTru1.53)</option>
+          <option value="v_pacos-vicPac1.53">Vicugna pacos (vicPac1.53)</option>
+          <option value="x_tropicalis-JGI4.1.53">Xenopus tropicalis (JGI4.1.53)</option>
+	</param>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="gio" name="Genome_Information" label="mGene Genome Info in GIO format"/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+
+.. class:: infomark
+
+**What it does**
+
+This tool converts a file in FASTA format containing genomic sequences into a genome information object (GIO) usable by mGene.
+
+------
+
+.. class:: infomark
+
+**About formats** 
+
+**FASTA format** A sequence in FASTA format begins with a single-line
+description, followed by lines of sequence data. The description line
+is distinguished from the sequence data by a greater-than (">") symbol
+in the first column. The token until the first space or the end of the 
+line is used as identifier for the sequence. The remainer of the 
+description line will be ignored.
+
+An example sequence in FASTA format is:
+
+>CHR1
+
+CCCTAAACCCTAAACCCTAAACCCTAAACCTCTGAATCCTTAATCCCTAAATCCCTAAAT
+CTTTAAATCCTACATCCATGAATCCCTAAATACCTAATTCCCTAAACCCGAAACCGGTTT
+CTCTGGTTGAAAATCATTGTGTATATAATGATAATTTTATCGTTTTTATGTAATTGCTTA
+TTGTTGTGTGTAGATTTTTTAAAAATATCATTTGAGGTCAATACAAATCCTATTTCTTGT
+GGTTTTCTTTCCTTCACTTAGCTATGGATGGTTTATCTTCATTTGTTATATTGGATACAA
+GCTTTGCTACGATCTACATTTGGGAATGTGAGTCTCTTATTGTAACCTTAGGGTTGGTTT
+ATCTCAAGAATCTTATTAATTGTTTGGACTGTTTATGTTTGGACATTTATTGTCATTCTT
+ACTCCTTTGTGGAAATGTTTGTTCTATCAATTTATCTTTTGTGGGAAAATTATTTAGTTG
+TAGGGATGAAGTCTTTCTTCGTTGTTGTTACGCTTGTCATCTCATCTCTCAATGATATGG
+GATGGTCCTTTAGCATTTATTCTGAAGTTCTTCTGCTTGATGATTTTATCCTTAGCCAAA
+AGGATTGGTGGTTTGAAGACACATCATATCAAAAAAGCTATCGCCTCGACGATGCTCTAT
+TTCTATCCTTGTAGCACACATTTTGGCACTCAAAAAAGTATTTTTAGATGTTTGTTTTGC
+...
+
+**GIO format** Genome Information Object is an internal format used to
+store relevant information about the considered genome (as extracted
+from a FASTA file). Includes for example number and length of
+chromosomes/contigs. 
+
+
+</help>
+</tool>

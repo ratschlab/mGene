@@ -1,0 +1,26 @@
+<tool id="decomposemgenepredictor_0.3" name="DecomposeMGenePredictor" version="0.3">
+  <description>Decomposes a complete mGene predictor object into the various parts</description>
+  <command>~/bin/octave_start_script.sh "setup_mgene; decompose_mgene_predictor('$Trained_Gene_Predictor', '$Trained_Gene_Predictor.extra_files_path', '$tss', '$tss.extra_files_path', '$tis', '$tis.extra_files_path', '$acc', '$acc.extra_files_path', '$don', '$don.extra_files_path', '$stop', '$stop.extra_files_path', '$cleave', '$cleave.extra_files_path', '$intergenic', '$intergenic.extra_files_path','$utr5exon', '$utr5exon.extra_files_path','$cds_exon', '$cds_exon.extra_files_path','$intron', '$intron.extra_files_path','$utr3exon', '$utr3exon.extra_files_path','$Trained_mGene_Predictor', '$Trained_mGene_Predictor.extra_files_path');" > /dev/null</command>
+  <inputs>
+    <param format="tmgp" name="Trained_mGene_Predictor" type="data" label="Trained mGene Predictor"/>
+  </inputs>
+  <outputs>
+    <data format="tgp" name="Trained_Gene_Predictor" label="Trained Gene Predictor"/>
+    <data format="tsp" name="Trained_TSS_Predictor" label="Signal predictor for transcription start sites"/>
+    <data format="tsp" name="Trained_TIS_Predictor" label="Signal predictor for translation initiation sites"/>
+    <data format="tsp" name="Trained_Acceptor_Predictor" label="Signal predictor for acceptor splice sites"/>
+    <data format="tsp" name="Trained_Donor_Predictor" label="Signal predictor for donor splice sites"/>
+    <data format="tsp" name="Trained_Stop_Predictor" label="Signal predictor for translation termination sites"/>
+    <data format="tsp" name="Trained_Cleave_Predictor" label="Signal predictor for cleavage sites"/>
+    <data format="tcp" name="Trained_Intergenic_Predictor" label="Content predictor for intergenic segments"/>
+    <data format="tcp" name="Trained_5UTR_Predictor" label="Content predictor for 5' UTR segments"/>
+    <data format="tcp" name="Trained_CDSExon_Predictor" label="Content predictor for CDS exon segments"/>
+    <data format="tcp" name="Trained_Intron_Predictor" label="Content predictor for intron segments"/>
+    <data format="tcp" name="Trained_3UTR_Predictor" label="Content predictor for 3' UTR segments"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+</help>
+</tool>

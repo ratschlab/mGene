@@ -1,0 +1,64 @@
+<tool id="transcript2anno_0.3" name="Transcript2Anno" version="0.3">
+  <description>Aligns a set of mRNA or protein sequences against the genome and creates a genome annotation</description>
+  <command>~/bin/octave_start_script.sh "setup_mgene; transcript2anno('$genome', '$genome.extra_files_path', '$fasta_input', '$fasta_input.extra_files_path', '$fasta_type', '$fasta_stringency', 
+        #for $q in $addfiles
+            '${q.fasta}', '${q.fasta.extra_files_path}', '${q.fasta_type}', '${q.fasta_stringency}'
+        #end for
+        '$Annotation', '$Annotation.extra_files_path);">> $Log_File</command>
+  <inputs>
+    <param format="gio" name="genome" type="data" label="Genome information file" help="Genome information file containing information about the chromosomes/contigs of the genome. It can be created with the GenomeTool."/>
+    <param format="fasta" name="fasta_input" type="data" label="mRNA or protein sequences" help="File in FASTA format containing mRNA or protein sequences to be aligned against the genome."/>
+    <param name="fasta_type" type="select" label="Fasta file content" help="">
+      <option value="est">EST Sequences</option>
+      <option value="cdna">cDNA Sequences</option>
+      <option value="protein">Protein Sequences</option>
+    </param>
+    <param name="fasta_stringency" type="select" label="Alignment stringency" help="">
+      <option value="strict">Strict (high quality sequences from same organism)</option>
+      <option value="medium">Intermediate (low quality sequences or from closely related organism)</option>
+      <option value="loose">Loose (from other organism)</option>
+    </param>
+    <repeat name="addfiles" title="Additional file">
+      <param format="fasta" name="fasta_input" type="data" label="mRNA or protein sequences" help="File in FASTA format containing mRNA or protein sequences to be aligned against the genome."/>
+      <param name="fasta_type" type="select" label="Fasta file content" help="">
+      <option value="est">EST Sequences</option>
+      <option value="cdna">cDNA Sequences</option>
+      <option value="protein">Protein Sequences</option>
+      </param>
+    <param name="fasta_stringency" type="select" label="Alignment stringency" help="">
+      <option value="strict">Strict (high quality sequences from same organism)</option>
+      <option value="medium">Intermediate (low quality sequences or from closely related organism)</option>
+      <option value="loose">Loose (from other organism)</option>
+    </param>
+    </repeat>
+  </inputs>
+  <outputs>
+    <data format="gann" name="Annotation" type="data" label="Partial genome annotation created from the alignments" help=""/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+Aligns mRNA or protein sequences against the genome to infer exon and introns.
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+**GFF format** General Feature Format is a format for describing genes and other features associated with DNA, RNA and Protein sequences. GFF lines have nine tab-separated fields::
+
+    1. seqname - Must be a chromosome or scaffold.
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. The first base is numbered 1.
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Valid entries include '+', '-', or '.' (for don't know/care).
+    8. frame - If the feature is a coding exon, frame should be a number between 0-2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+</help>
+</tool>

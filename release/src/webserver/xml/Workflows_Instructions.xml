@@ -1,0 +1,205 @@
+<tool id="mgene_workflows_instructions_0.3" name="Examples and Instructions" version="0.3">
+  <description>Instructions on how to use the mGene Workflows and examples with predefined datasets</description>
+  <command>~/bin/octave_start_script.sh "setup_mgene; gendata('$organism', '$Genome_Sequence', '$GFF3_Annotation', '$Info'); " > /dev/null </command>
+  <inputs>
+    <param name="organism" type="select" label="Example data for the following organism is added to the history">
+      <option value="elegans">Caenorhabditis elegans (small part of chromosome II)</option>
+      <option value="nGASP-Train">Caenorhabditis elegans (nGASP training regions)</option> 
+<!--      <option value="thaliana">Arabidopsis thaliana</option> -->
+    </param>
+  </inputs>
+  <outputs>
+    <data format="fasta" name="Genome_Sequence" label="Example Data: Genome Sequence in FASTA format"/>
+    <data format="gff3" name="GFF3_Annotation" label="Example Data: Genome Annotation in GFF3 format"/>
+    <data format="txt" name="Info" label="Example Data: Information about the datasets"/>
+  </outputs>
+
+  <help>
+
+
+
+
+.. class:: infomark
+
+**Introduction** 
+
+Recently, Galaxy has been providing workflows that allow one to
+pre-define the order in which tools are applied to input files and
+intermittently generated files to achieve a certain goal. These
+workflows can be edited by and shared among users. Workflows can help
+to simplify the relatively complex process of creating a gene finding
+system that consists of many different steps. In order to run a
+workflow, one only needs to specify the few input arguments and as a
+result obtains, for instance, the gene predictions as well as
+intermediate results allowing detailed inspection.
+
+We provide two basic workflows:
+
+* **mGene Prediction** uses a pretrained mGene predictor as well
+  as a FASTA file with genomic sequences as input and performs genome-wide gene
+  predictions.
+
+* **mGene Training** uses a FASTA file with genomic sequences and a
+  (partial) annotation of these sequences in GFF3 format in
+  order to train the signal, content, and gene predictors and to perform
+  genome-wide gene predictions.
+
+
+For a general introduction to galaxy please visit 
+http://main.g2.bx.psu.edu/
+
+
+------
+
+.. class:: infomark
+
+**Replacing individual modules and constructing new workflows** 
+
+
+------
+
+.. class:: infomark
+
+**Examples**
+
+**Example 1: Using a pre-trained model to predict genes from DNA sequence**
+
+As a simple example we will use the provided data from *Caenorhabditis
+elegans* to predict genes. This task will only require a FASTA
+file containing the genomic sequence. We will use some annotated genes
+in a GFF3 file merely to compare them with the results of our
+predictions and to estimate the performance accuracy. The following
+tools are needed (they can be selected from the list on the left-hand
+side):
+
+* **Examples and Instructions:** Choose "Caenorhabditis elegans (small
+  part of chromosome II)" from the selection menu at the top of this
+  page and press Execute. Three files will be uploaded and are added
+  to the current history on the right-hand side: the Genome Sequence
+  (FASTA), the Genome Annotation (GFF3), and a text file containing
+  some information on the data.
+
+* **mGenePredict:** To start generating gene predictions select "From
+  current history" as *Source of genome sequence* then make sure that
+  the Example Data FASTA file is selected as *Genomic sequence*. As
+  *Predictor source* choose "Pretrained predictor", then pick
+  "Caenorhabditis elegans" as *organism* and press
+  Execute. It will take up to 45 minutes until the result file "mGene Gene
+  predictions in GFF3 format" will be ready in your history panel.
+
+* **mGeneEval:** This tool is used to compare the obtained gene
+  predictions against a known annotation. Select the "Example Data:
+  Genome Annotation in GFF3 form" as *Label file* and the "mGene Gene predictions in
+  GFF3 format" as *Gene predictions*. As *Genomic sequence* select the
+  Example Data FASTA file and as *Option* "Only consider regions around
+  annotated genes". As a result an extensive accuracy report is
+  generated and stored as text file.
+
+
+To run predictions on your own data, use the "Upload file" tool to
+upload a FASTA file from your computer and continue with mGenePredict.
+
+**Example 2:  Training a new model and applying it to predict unknown genes from DNA sequence**
+
+We are currently applying our system to a variety of other
+organisms. (Please check the list in the mGenePredict Tool). However
+if we do not (yet) provide a pre-trained model for your organism of
+interest, you have the possibility to train the system yourself. In
+this case you will need a FASTA file with the genomic sequence and
+additionally a GFF3 file containing some annotated, e.i. known genes. To
+elucidate the process along the lines of an example we will again use
+the provided data from *Caenorhabditis elegans*. The following tools are
+applied:
+
+* **Examples and Instructions:** Choose "Caenorhabditis elegans (small
+  part of chromosome II)" from the selection menu at the top of this
+  page and press Execute. Three files will be uploaded and are added
+  to the current history on the right-hand side: the Genome Sequence
+  (FASTA), the Genome Annotation (GFF3), and a text file containing
+  some information on the data.
+
+* **mGeneTrain:** Select the FASTA file as *Genomic sequence* and the
+  GFF3 file as *Set of known genes*. Press Execute and have some
+  patience. Training a model to detect genes is not a simple task and
+  can take some time. The output will be the internal data structure
+  TmGP (Trained mGene Predictor). It can be used with mGenePredict to
+  predict genes.
+
+* **mGenePredict:** To start generating gene predictions select "From
+  current history" as *Source of genome sequence* then make sure that
+  the FASTA file is selected as genomic sequence. As *Predictor source*
+  choose "Predictor from current history", pick the TmGP file generated
+  by the mGeneTrain tool, then press Execute.  
+
+* **mGeneEval:** You can again compare the generated predictions with
+  the annotation file (See Example 1). Note that if you use the same
+  GFF3 label file for evaluation that you have previously used to run
+  mGeneTrain the reproted errors are training errors. To estimate
+  the true performance of your predictor you need a different set of
+  annotated genes that have not been used for training.
+
+
+For training on your own data you need to upload a FASTA file with the
+DNA sequence and additionally a corresponding GFF3 file with at least
+a few annotated genes. You can then continue with the mGeneTrain tool
+on these files.
+
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+
+
+**FASTA format** A sequence in FASTA format begins with a single-line
+description, followed by lines of sequence data. The description line
+is distinguished from the sequence data by a "greater than" (>) symbol
+in the first column. The token until the first space or the end of the 
+line is used as an identifier for the sequence. The remainder of the 
+description line is ignored.
+
+An example sequence in FASTA format is:
+
+>CHR1
+
+CCCTAAACCCTAAACCCTAAACCCTAAACCTCTGAATCCTTAATCCCTAAATCCCTAAAT
+CTTTAAATCCTACATCCATGAATCCCTAAATACCTAATTCCCTAAACCCGAAACCGGTTT
+CTCTGGTTGAAAATCATTGTGTATATAATGATAATTTTATCGTTTTTATGTAATTGCTTA
+TTGTTGTGTGTAGATTTTTTAAAAATATCATTTGAGGTCAATACAAATCCTATTTCTTGT
+GGTTTTCTTTCCTTCACTTAGCTATGGATGGTTTATCTTCATTTGTTATATTGGATACAA
+GCTTTGCTACGATCTACATTTGGGAATGTGAGTCTCTTATTGTAACCTTAGGGTTGGTTT
+ATCTCAAGAATCTTATTAATTGTTTGGACTGTTTATGTTTGGACATTTATTGTCATTCTT
+ACTCCTTTGTGGAAATGTTTGTTCTATCAATTTATCTTTTGTGGGAAAATTATTTAGTTG
+TAGGGATGAAGTCTTTCTTCGTTGTTGTTACGCTTGTCATCTCATCTCTCAATGATATGG
+GATGGTCCTTTAGCATTTATTCTGAAGTTCTTCTGCTTGATGATTTTATCCTTAGCCAAA
+AGGATTGGTGGTTTGAAGACACATCATATCAAAAAAGCTATCGCCTCGACGATGCTCTAT
+TTCTATCCTTGTAGCACACATTTTGGCACTCAAAAAAGTATTTTTAGATGTTTGTTTTGC
+...
+
+**GFF3 format** General Feature Format is a format for describing genes
+and other features associated with DNA, RNA, and protein sequences. GFF
+lines have nine tab-separated fields:
+
+    1. seqname - The name of the chromosome or scaffold (e.g., chr1, chrY_random).
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. (The first base on a chromosome is numbered 1.)
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Defines the strand - either '+' or '-'.
+    8. frame - If the feature is a coding exon, frame should be a number between 0 and 2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+For more information see http://www.sequenceontology.org/gff3.shtml
+
+
+**TmGP format** Trained mGene Predictor is an internal structure that
+contains the complete trained model including all signal and content
+predictors as well as the gene predictor to predict genes from
+sequence.
+
+
+</help>
+</tool>

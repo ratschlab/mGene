@@ -1,0 +1,225 @@
+<tool id="mgenetrain_0.3" name="mGeneTrain" version="0.3">
+  <description>Trains mGene using set of known genes</description>
+  <command>~/bin/octave_start_script.sh "setup_mgene; mgene_train('$fasta_input', '$fasta_input.extra_files_path', '$gfffile', '$version.ver', 
+    #if $version.ver=="other"
+    '$version.seqids.seqid_names', '$version.source.source_names', \"level:$version.level1:$version.level2:$version.level3_coding:$version.level3_exon:$version.level3_additional\",
+    #else
+    '-','-','-',
+    #end if 
+    '$Trained_mGene_Predictor', '$Trained_mGene_Predictor.extra_files_path', 0, 0, $maxIter);">> $Log_File</command>
+  <inputs>
+    <param format="fasta" name="fasta_input" type="data" label="Genomic sequence" help="File in FASTA format containing sequences of all chromosomes/contigs belonging to the considered genome."/>
+    <param format="gff3" name="gfffile" type="data" label="Set of known genes for training in GFF3 format" help="Partial genome annotation in GFF3 format describing the known gene structures for the provided genome."/>
+    <conditional name="version">
+      <param name="ver" type="select" label="Version of GFF3 file" help="Specify which lines are parsed in your GFF3 file">
+	<option value="wormbase">Wormbase Gff3 format</option>
+	<option value="other">Specify the version yourself</option>
+      </param>
+      <when value="wormbase">
+ 
+      </when>
+      <when value="other"> 
+
+	<conditional name="seqids">
+	  <param name="seq" type="select" label="filter for the following seqids (column 1)" help="">
+	    <option value="use_all_sequids">use all sequids</option>
+	    <option value="filter_seqids">only parse lines with following seqids:</option>
+	  </param>
+	  <when value="use_all_sequids"> 
+	    <param name="seqid_names" type="hidden" value="-"/>
+	  </when>
+	  <when value="filter_seqids">
+	    <param name="seqid_names" type="text" label="considered seqids" help=""/>
+	  </when>
+	</conditional>
+
+	<conditional name="source">
+	  <param name="source_option" type="select" label="filter for source (column 2)" help="">
+	    <option value="use_all_sources">use all sources</option>
+	    <option value="protein-coding">use protein-coding only</option>
+	    <option value="other">use only the following sources:</option>
+	  </param>
+	  <when value="use_all_sources">
+	    <param name="source_names" type="hidden" value="-"/>
+	  </when>
+	  <when value="Coding_transcript"> 
+	    <param name="source_names" type="hidden" value="Coding_transcript"/>
+	  </when>
+	  <when value="other">
+	    <param name="source_names" type="text" label="considered sources" help=""/>
+	  </when>
+	</conditional>
+
+
+	<param name="level1" type="select" label="parse following types for genes (column 3)" help="" multiple="true" display="checkboxes"  accept_default="true">
+	  <option value="gene" selected="true">gene </option>
+	  <option value="mRNA">mRNA</option>
+	</param>
+	<param name="level2" type="select" label="parse following types for transcripts (column 3)" help="" multiple="true" display="checkboxes">
+	  <option value="mRNA" selected="true">mRNA</option>
+	</param>
+	<param name="level3_coding" type="select" label="parse following types for coding exons (column 3)" help="" multiple="true" display="checkboxes">
+	  <option value="CDS" selected="true">CDS</option>
+	  <option value="exon">exon</option>
+	</param>
+	<param name="level3_exon" type="select" label="parse following types for exons (column 3)" help="" multiple="true" display="checkboxes">
+	  <option value="exon" selected="true">exon</option>
+	</param>
+	<param name="level3_additional" type="select" label="parse following additionnal types(column 3)" help="usually, if you have selected exons and CDS exons, the remaining information can be derived from those types." multiple="true" display="checkboxes">
+	  <option value="five_prime_utr">five_prime_utr</option>
+	  <option value="three_prime_utr">three_prime_utr</option>
+	
+	</param>
+      </when>
+    </conditional>
+
+    <param name="maxIter" type="integer" size="3" value="100" help="">
+      <label>Maximal number of training Iterations</label>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="tmgp" name="Trained_mGene_Predictor" label="Trained mGene Predictor in TmGP format"/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+
+.. class:: infomark
+
+**What it does**
+
+This tool trains the complete genefinding system mGene. Based on a
+sequence file given in FASTA format and a set of annotated genes in
+GFF3 format, mGene learns to predict gene structures on genomic
+DNA sequences. The output is an internal data structure (TmGP) containing the trained
+gene predictor that can be used with the mGenePredict tool to predict
+genes.
+
+For some organisms, we have already trained an mGene model, which can be
+used to generate predictions. We recommend that the user check if the
+organism of interest is on this list (see the mGenePredict tool). If
+it is, training might not be necessary. Usually the
+pre-trained model will be more accurate than a user-trained model, since
+we have taken particular care in the choice of training data and also
+perform a more extensive model selection than what is possible for the
+user. **Also, we would like to ask users who are interested in a fair
+comparison of mGene with other gene prediction systems on a particular
+set of data to contact us directly.**
+
+**Input**
+
+* To run an example, you can go to the "Examples and Instructions" tool
+  and upload one of the provided example data sets, e.g. "Caenorhabditis
+  elegans (small part of chromosome II)". A FASTA file and a GFF3
+  file will appear in your History. You can now choose the files for input for this tool.
+
+* To run the tool on your own data, upload a sequence file (in FASTA
+  format) and an annotation file (GFF3 format) from your computer with
+  the "Upload file" tool. They should then appear in the
+  History. Alternatively, you can get files from one of the
+  connected databases like UCSC by choosing the "Get Data" tool.
+
+
+**Common Mistakes**
+
+* If you upload a GFF3 file, you need to specify the file format as a
+  GFF3. If you choose "Auto-detect", the file will be uploaded as GFF
+  file and you can't select it as input for the mGeneTrain tool.
+
+* Coordinates given in the GFF3 file need to correspond to the
+  sequence file (e.g., if you use the *C.elegans* genome annotation WS160
+  with the sequence WS180, the program will obviously not work).
+
+* The Seqids given in the first column of the GFF3 file should be 
+  identical to the ones used in the description lines of the FASTA file
+  (e.g., if you use 'chr1', 'chr2' as sequids and 'I','II' in the FASTA
+  file, the program will not be able to assign the right
+  sequence to the annotated genes).
+
+* The complete annotation file will be parsed for lines of the
+  following types (column 3): 'genes', 'mRNA', 'five_prime_UTR',
+  'three_prime_UTR', 'CDS', 'coding_exon' and 'exon' . If you use it
+  for training mGene, you might want to exclude annotations that are
+  themselves derived from other gene finders, otherwise mGene might
+  learn to imitate the mistakes made by the other system. Also, if the GFF3
+  file contains pseudogenes, or non-coding RNAs, you might want to
+  filter them out beforehand. (You could use the tools provided under
+  FILTER AND SORT for this task).
+
+* If the annotation file contains too few genes, training might not
+  work, or the performance could be extremely weak. In such a case,
+  there will be a warning in the output file.
+
+**Estimated run time**
+
+* To run the small *Caenorhabditis elegans* example (41 annotated genes on a
+  ~6000bp sequence) takes about 4h.
+
+
+**Output**
+
+* The output is an internal data structure (TmGP) containing the
+  trained gene predictor, which can be used with the mGenePredict tool
+  to predict genes. The reported text file contains some performance
+  estimates for the individual signals and contents (e.g., splice sites or
+  transcription start site predictor, etc). **If you wish to share
+  your model for a new organism, we invite you to contact us and we will
+  include it in our list of pre-trained models.**
+
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+
+**FASTA format** A sequence in FASTA format begins with a single-line
+description, followed by lines of sequence data. The description line
+is distinguished from the sequence data by a "greater than" (>) symbol
+in the first column. The token until the first space or the end of the 
+line is used as an identifier for the sequence. The remainder of the 
+description line is ignored.
+
+An example sequence in FASTA format is:
+
+>CHR1
+
+CCCTAAACCCTAAACCCTAAACCCTAAACCTCTGAATCCTTAATCCCTAAATCCCTAAAT
+CTTTAAATCCTACATCCATGAATCCCTAAATACCTAATTCCCTAAACCCGAAACCGGTTT
+CTCTGGTTGAAAATCATTGTGTATATAATGATAATTTTATCGTTTTTATGTAATTGCTTA
+TTGTTGTGTGTAGATTTTTTAAAAATATCATTTGAGGTCAATACAAATCCTATTTCTTGT
+GGTTTTCTTTCCTTCACTTAGCTATGGATGGTTTATCTTCATTTGTTATATTGGATACAA
+GCTTTGCTACGATCTACATTTGGGAATGTGAGTCTCTTATTGTAACCTTAGGGTTGGTTT
+ATCTCAAGAATCTTATTAATTGTTTGGACTGTTTATGTTTGGACATTTATTGTCATTCTT
+ACTCCTTTGTGGAAATGTTTGTTCTATCAATTTATCTTTTGTGGGAAAATTATTTAGTTG
+TAGGGATGAAGTCTTTCTTCGTTGTTGTTACGCTTGTCATCTCATCTCTCAATGATATGG
+GATGGTCCTTTAGCATTTATTCTGAAGTTCTTCTGCTTGATGATTTTATCCTTAGCCAAA
+AGGATTGGTGGTTTGAAGACACATCATATCAAAAAAGCTATCGCCTCGACGATGCTCTAT
+TTCTATCCTTGTAGCACACATTTTGGCACTCAAAAAAGTATTTTTAGATGTTTGTTTTGC
+...
+
+**GFF3 format** General Feature Format is a format for describing genes
+and other features associated with DNA, RNA, and protein sequences. GFF
+lines have nine tab-separated fields:
+
+    1. seqname - The name of the chromosome or scaffold (e.g., chr1, chrY_random).
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. (The first base on a chromosome is numbered 1.)
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Defines the strand - either '+' or '-'.
+    8. frame - If the feature is a coding exon, *frame* should be a number between 0 and 2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+For more information see http://www.sequenceontology.org/gff3.shtml
+
+
+**TmGP format** Trained mGene Predictor is an internal structure that
+contains the complete trained model including all signal and content
+predictors as well as the gene predictor to predict genes from DNA
+sequences.
+
+</help>
+</tool>

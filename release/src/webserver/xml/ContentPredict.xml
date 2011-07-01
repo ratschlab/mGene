@@ -1,0 +1,103 @@
+<tool id="contentpredict_0.3" name="ContentPredict" version="0.3">
+  <description>Applies a trained content predictor to the whole genome</description>
+  <command>~/bin/octave_start_script.sh "rmpath('/home/galaxy/mgene_galaxy'); addpath('/home/galaxy/svn/projects/mGene_core/'); paths; content_predict(
+  	#if $history_vs_pretrained.source=="pretrained"
+          'content:$history_vs_pretrained.organism:$history_vs_pretrained.content_name', 
+        #else
+          '$history_vs_pretrained.Trained_Content_Predictor.extra_files_path', 
+        #end if
+    '$Genome_Information.extra_files_path', '$Content_Predictions', '$Content_Predictions.extra_files_path', -1);" >> $Log_File</command>
+  <inputs>
+    <param format="gio" name="Genome_Information" type="data" label="Genome information file" help="Internal representation of the genomic sequence (eg, chromosomes or contigs) in which to predict contents. The GIO file can be created with 'GenomeTool'."/>
+    <conditional name="history_vs_pretrained">
+      <param name="source" type="select" label="Predictor source" help="">
+        <option value="history">Predictor from current history</option>
+	<option value="pretrained">Pretrained predictor</option>
+      </param>
+    <when value="history"> 
+      <param format="tsp" name="Trained_Content_Predictor" type="data" label="Trained Content Predictor" help="This refers to an internal data structure (in TCP format) describing a trained SVM classifier for a specific content type. It can be created with 'ContentTrain'."/>
+    </when>
+    <when value="pretrained"> 
+      <param name="organism" type="select" label="Organism" help="">
+        <option value="A_gambia">Anopheles gambiae</option>
+        <option value="A_thaliana">Arabidopsis thaliana</option>
+        <option value="A_nidulans">Aspergillus nidulans</option>
+        <option value="elegans">Caenorhabditis elegans</option>
+        <option value="C_savignyi">Ciona savignyi</option>
+        <option value="D_melanogaster">Drosophila melanogaster</option>
+        <option value="T_nigroviris">Tetraodon nigroviridis</option>
+        <option value="S_cerevisiae">Saccharomyces cerevisiae</option>
+      </param>
+      <param name="content_name" type="select" label="Genomic content for which the predictor should be trained" help="Select the content for which a predictor is to be trained. The label file has to contain labeled genomic positions for the selected content. If one chooses 'Automatic', a predictor is trained for the content with most labled genomic segments.">
+	<option value="intergenic">Intergenic</option>
+	<option value="utr5exon">5' UTR Exon</option>
+	<option value="cds_exon">CDS Exon</option>
+	<option value="intron">Intron</option>
+	<option value="utr3exon">3' UTR Exon</option>
+      </param>
+    </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="spf" name="Content_Predictions" label="Content Predictions in SPF format"/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool runs the trained content predictor, supplied as a TCP file,
+on the given genomic sequences, as encoded in the GIO file.  It
+operates as follows:
+
+Around each location in the given genomic sequence, a sequence window
+(the extent of which is specified in the TCP file) is copied from the
+genomic sequence.  This window serves as input for the trained SVM,
+which computes a corresponding output score.  The higher the score,
+the more likely that the location is indeed part of a segment of the
+given content type.
+
+------
+
+**Output**
+
+The output is a file in signal prediction format (SPF) which contains
+a prediction score for each location in the genomic input sequence.
+(Note that this is not a mistake: no extra "content prediction format"
+is required, as SPF is perfectly suitable for contents as well.)
+
+The output may typically serve as input for 'GeneTrain'.  It can also
+be analyzed with 'ContentEval'.
+
+------
+
+**Example**
+
+A content predictor for acceptor splice sites may provided the following outputs::
+
+   CHR1	acc	Conf_cum	731	+	0.239
+   CHR1	acc	Conf_cum	734	+	0.264
+   CHR1	acc	Conf_cum	764	+	0.857
+   CHR1	acc	Conf_cum	766	+	0.115
+   CHR1	acc	Conf_cum	784	+	0.085
+
+--------
+
+.. class:: infomark
+
+**About formats**
+
+**CPF format** Content Prediction format was designed for providing
+information such as labels or predictions for specific genomic
+locations (with strand information). It has requires exactly six
+fields::
+
+    1. chrom - The name of the chromosome (e.g. chr1, chrY_random).
+    2. contentName - possible choices include intergenic, utr5exon, cds_exon, intron utr3exon.
+    3. scoreName - possible choices include label, output.
+    4. chromPos - The position in the chromosome. (The first base in a chromosome is numbered 1.)
+    5. strand - Defines the strand - either '+' or '-'.
+    6. score - The score between -infinity and infinity. If scoreName is 'label', then the score should be either -1 or 1.
+
+</help>
+</tool>

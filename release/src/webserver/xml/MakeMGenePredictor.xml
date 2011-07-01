@@ -1,0 +1,30 @@
+<tool id="makemgenepredictor_0.3" name="ComposeMGenePredictor" version="0.3">
+  <description>Creates a complete mGene predictor object from the various parts</description>
+  <command>~/bin/octave_start_script.sh "setup_mgene; make_mgene_predictor('$Trained_Gene_Predictor', '$Trained_Gene_Predictor.extra_files_path', '$tss', '$tss.extra_files_path', '$tis', '$tis.extra_files_path', '$acc', '$acc.extra_files_path', '$don', '$don.extra_files_path', '$stop', '$stop.extra_files_path', '$cleave', '$cleave.extra_files_path', '$intergenic', '$intergenic.extra_files_path','$utr5exon', '$utr5exon.extra_files_path','$cds_exon', '$cds_exon.extra_files_path','$intron', '$intron.extra_files_path','$utr3exon', '$utr3exon.extra_files_path','$Trained_mGene_Predictor', '$Trained_mGene_Predictor.extra_files_path');" > /dev/null</command>
+  <inputs>
+    <param format="tgp" name="Trained_Gene_Predictor" type="data" label="Trained Gene Predictor"/>
+    <param format="tsp" name="tss" type="data" label="Signal predictor for transcription start sites"/>
+    <param format="tsp" name="tis" type="data" label="Signal predictor for translation initiation sites"/>
+    <param format="tsp" name="acc" type="data" label="Signal predictor for acceptor splice sites"/>
+    <param format="tsp" name="don" type="data" label="Signal predictor for donor splice sites"/>
+    <param format="tsp" name="stop" type="data" label="Signal predictor for translation termination sites"/>
+    <param format="tsp" name="cleave" type="data" label="Signal predictor for cleavage sites"/>
+    <param format="tcp" name="intergenic" type="data" label="Content predictor for intergenic segments"/>
+    <param format="tcp" name="utr5exon" type="data" label="Content predictor for 5' UTR segments"/>
+    <param format="tcp" name="cds_exon" type="data" label="Content predictor for CDS exon segments"/>
+    <param format="tcp" name="intron" type="data" label="Content predictor for intron segments"/>
+    <param format="tcp" name="utr3exon" type="data" label="Content predictor for 3' UTR segments"/>
+  </inputs>
+  <outputs>
+    <data format="tmgp" name="Trained_mGene_Predictor" label="Trained mGene Predictor"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool bundles all necessary trained signal, content and gene
+predictor objects into a trained mGene predictor object that can be used
+together with the mGenePredict workflow.
+
+</help>
+</tool>

@@ -1,0 +1,257 @@
+<tool id="mgeneeval_0.3" name="mGeneEval" version="0.3">
+  <description>Computes performance measures based on gene labels and predictions</description>
+  <command>~/bin/octave_start_script.sh "setup_mgene; 
+	mgene_eval('$label', '$label.extra_files_path', '$version.ver',
+    	#if $version.ver=="other"
+    	'$version.seqids.seqid_names', '$version.source.source_names', \"level:$version.level1:$version.level2:$version.level3_coding:$version.level3_additional\", 0, -1, \"$version.converters\",
+    	#else
+    	'-','-','-', 0, -1, '',
+    	#end if 
+	'$predictions', '$predictions.extra_files_path', '$fasta_input', '$performance', '$performance.extra_files_path','$eval_genomewide');"> $Log_File ; ~/bin/cleanup_output.sh $Log_File</command>
+  <inputs>
+    <param format="gff3" name="label" type="data" label="Genome annotation in GFF3 format" help="Partial genome annotation in GFF3 format describing the known gene structures for the provided genome."/>
+    <conditional name="version">
+      <param name="ver" type="select" label="Version of GFF3 file" help="Specify which lines are parsed in your GFF3 file">
+	<option value="wormbase">Wormbase GFF3 format</option>
+	<option value="flybase">Flybase GFF3 format</option>
+	<option value="tair">Tair8 GFF3 format</option>
+	<option value="ensembl-gtf">Ensembl GTF format</option>
+	<option value="other">Specify the version yourself</option>
+      </param>
+      <when value="wormbase">
+	
+      </when>
+      <when value="flybase">
+      
+      </when>
+      <when value="tair">
+	
+      </when>
+      <when value="ensembl-gtf">
+	
+      </when>
+      <when value="other"> 
+	<param name="converters" type="select" label="Conversions before extracting the information" help="Please choose which conversions should be applied before reading the information. For instance, files in Gene Transfer Format (GTF) can be easily transformed into GFF3 files." multiple="true" display="checkboxes"  accept_default="true">
+	  <option value="gtf-to-gff3" selected="false" help="">GTF-to-GFF3</option>
+	  <option value="correct-tis-stop" selected="false" help="">Correct translation start and stop sites</option>
+	</param>
+	
+	<conditional name="seqids">
+	  <param name="seq" type="select" label="filter for the following seqids (column 1)" help="">
+	    <option value="use_all_sequids">use all sequids</option>
+	    <option value="filter_seqids">only parse lines with following seqids:</option>
+	  </param>
+	  <when value="use_all_sequids"> 
+	    <param name="seqid_names" type="hidden" value="-"/>
+	  </when>
+	  <when value="filter_seqids">
+	    <param name="seqid_names" type="text" label="considered seqids" help="" value="-"/>
+	  </when>
+	</conditional>
+	
+	<conditional name="source">
+	  <param name="source_option" type="select" label="filter for source (column 2)" help="">
+	    <option value="use_all_sources">use all sources</option>
+	    <option value="Coding_transcript">use 'Coding_transcript' only</option>
+	    <option value="other">use only the following sources:</option>
+	  </param>
+	  <when value="use_all_sources">
+	    <param name="source_names" type="hidden" value="-"/>
+	  </when>
+	  <when value="Coding_transcript"> 
+	    <param name="source_names" type="hidden" value="Coding_transcript"/>
+	  </when>
+	  <when value="other">
+	    <param name="source_names" type="text" label="considered sources" value="-" help=""/>
+	  </when>
+	</conditional>
+	
+	
+	<param name="level1" type="select" label="parse following types for genes (column 3)" help="" multiple="true" display="checkboxes"  accept_default="true">
+	  <option value="gene" selected="true">gene </option>
+	  <option value="mRNA">mRNA</option>
+	</param>
+	<param name="level2" type="select" label="parse following types for transcripts (column 3)" help="" multiple="true" display="checkboxes">
+	  <option value="mRNA" selected="true">mRNA</option>
+	</param>
+	<param name="level3_coding" type="select" label="parse following types for coding exons (column 3)" help="" multiple="true" display="checkboxes">
+	  <option value="CDS" selected="true">CDS</option>
+	  <option value="coding_exon">coding exon</option>
+          <option value="exon">exon</option>
+	</param>
+	<param name="level3_additional" type="select" label="parse following additionnal types (column 3)" help="usually, if you have selected exons and CDS exons, the remaining information can be derived from those types." multiple="true" display="checkboxes">
+	  <option value="exon" >exon</option>
+	  <option value="five_prime_UTR" selected="true">five_prime_UTR</option>
+	  <option value="three_prime_UTR" selected="true">three_prime_UTR</option>
+	</param>
+      </when>
+    </conditional>
+
+    <param format="gff3" name="predictions" type="data" label="Gene predictions in GFF3 format" help="The prediction file contains gene predictions for the genomic sequences and can be generated with the GenePredict tool."/>
+    <param format="fasta" name="fasta_input" type="data" label="Genomic sequence" help="File in FASTA format containing DNA sequences"/>
+    <param name="eval_genomewide" type="select" label="Option" help="If your annotation is incomplete, the evaluation should only be performed in the vicinity of annotated genes.">
+      <option value="1">Consider complete sequence</option>
+      <option value="0">Only consider regions around annoted genes</option>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="txt" name="performance"/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+
+.. class:: infomark
+
+**What it does**
+
+This tool compares two gene annotation files, where one is considered
+to be the "true annotation", i.e., the label file, while the other is
+considered to be a potentially incorrect annotation, i.e., the prediction file.
+The performance metrices employed are similar to those used in the
+EGASP competition [1]: Sensitivity and specifcity are 
+determined on the level of nucleotides, exons, transcripts, and genes
+while considering coding regions only. (See [2] for more details.)
+
+**References** 
+
+[1] Guigo R., J.F. Flicek, P. Abril, A. Reymond, J. Lagarde, F. Denoeud, S. Antonarakis,
+M. Ashburner, V.B. Bajic, E. Birney, R. Castelo, E. Eyras, C. Ucla, T.R. Gingeras,
+J. Harrow, T. Hubbard, S.E. Lewis, and M.G. Reese. EGASP: The human ENCODE
+genome annotation assessment project. Genome Biology, 7(S2), 2006.
+
+[2] Schweikert, G., Zien, A., Zeller, G., Behr, J.,
+Dieterich, C., Ong, C., Philips, P., Bona, F. D., Hartmann, L.,
+Bohlen, A., Kroeger, N., Sonnenburg, S., and Raetsch, G. (2009)
+mGene: Accurate computational gene finding with application to
+nematode genomes. Genome Research, under review.
+
+
+**Input**
+
+* Use two GFF3 files from your current history. You can also upload
+  new GFF3 files from your computer using the "Upload file" tool. 
+
+* You also need a FASTA file containing the sequence under consideration. 
+
+* Select whether you wish to evaluate the gene predictions with
+  respect to the complete sequence contained in the FASTA file or only
+  in the vicinity of the annotated genes from the label file.
+
+
+**Common Mistakes**
+
+* Note: If your annotation was incomplete for the sequence under
+  consideration while you computed predictions for the complete
+  sequence, your specificity will naturally be low when comparing for the 
+  the whole sequence, since any predicted gene that does not overlap with
+  an annotated one is counted as a wrong prediction. In this case, you
+  should choose the option "Only consider regions around annoted
+  genes".
+
+* If you upload a GFF3 file, you need to specify the file format as
+  GFF3. If you choose "Auto-detect", the file will be uploaded as a GFF
+  file and you can't select it as input for the mGeneEval tool.
+
+* Both annotation files, the label file, as well as the prediction file
+  need to correspond to the sequence specified in the FASTA file.
+
+
+
+
+
+**Output**
+
+This tool generates an extensive accuracy report, stored as a text
+file for subsequent inspection. For an ideal prediction that exactly
+reproduces the annotation, the output should look like the following
+(where sensitivity is the proportion of annotated features
+(nucleotide, exon, transcript, gene) that have been predicted; and specificity 
+the proportion of predicted features that are annotated):
+
+Evaluation
+  on coding nucleotide level:
+    sensitivity: 100.00%
+
+    specificity: 100.00%
+
+  on coding exon level:
+    sensitivity: 100.00% (missing exons: 0.00%)
+
+    specificity: 100.00% (wrong exons:   0.00%)
+
+  on coding transcript level:
+    sensitivity: 100.00% 
+
+    specificity: 100.00% 
+
+  on gene level:
+    sensitivity: 100.00%  (missing genes: 0.00%)
+
+    specificity: 100.00%  (wrong genes: 0.00%)
+    
+
+  TIS:
+    sensitivity: 100.00%
+    
+    specificity: 100.00%
+
+  STOP:
+    sensitivity: 100.00%
+    
+    specificity: 100.00%
+
+
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+
+**FASTA format** A sequence in FASTA format begins with a single-line
+description, followed by lines of sequence data. The description line
+is distinguished from the sequence data by a "greater than" (>) symbol
+in the first column. The token until the first space or the end of the 
+line is used as an identifier for the sequence. The remainder of the 
+description line is ignored.
+
+An example sequence in FASTA format is:
+
+>CHR1
+
+CCCTAAACCCTAAACCCTAAACCCTAAACCTCTGAATCCTTAATCCCTAAATCCCTAAAT
+CTTTAAATCCTACATCCATGAATCCCTAAATACCTAATTCCCTAAACCCGAAACCGGTTT
+CTCTGGTTGAAAATCATTGTGTATATAATGATAATTTTATCGTTTTTATGTAATTGCTTA
+TTGTTGTGTGTAGATTTTTTAAAAATATCATTTGAGGTCAATACAAATCCTATTTCTTGT
+GGTTTTCTTTCCTTCACTTAGCTATGGATGGTTTATCTTCATTTGTTATATTGGATACAA
+GCTTTGCTACGATCTACATTTGGGAATGTGAGTCTCTTATTGTAACCTTAGGGTTGGTTT
+ATCTCAAGAATCTTATTAATTGTTTGGACTGTTTATGTTTGGACATTTATTGTCATTCTT
+ACTCCTTTGTGGAAATGTTTGTTCTATCAATTTATCTTTTGTGGGAAAATTATTTAGTTG
+TAGGGATGAAGTCTTTCTTCGTTGTTGTTACGCTTGTCATCTCATCTCTCAATGATATGG
+GATGGTCCTTTAGCATTTATTCTGAAGTTCTTCTGCTTGATGATTTTATCCTTAGCCAAA
+AGGATTGGTGGTTTGAAGACACATCATATCAAAAAAGCTATCGCCTCGACGATGCTCTAT
+TTCTATCCTTGTAGCACACATTTTGGCACTCAAAAAAGTATTTTTAGATGTTTGTTTTGC
+...
+
+**GFF3 format** General Feature Format is a format for describing genes
+and other features associated with DNA, RNA, and protein sequences. GFF
+lines have nine tab-separated fields:
+
+    1. seqname - The name of the chromosome or scaffold (e.g., chr1, chrY_random).
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. (The first base on a chromosome is numbered 1.)
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Defines the strand - either '+' or '-'.
+    8. frame - If the feature is a coding exon, *frame* should be a number between 0 and 2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+For more information see http://www.sequenceontology.org/gff3.shtml
+
+
+</help>
+</tool>
+

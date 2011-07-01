@@ -1,0 +1,57 @@
+<tool id="transcript2anno_0.3" name="Transcript2Anno" version="0.3">
+  <description>Aligns a set of mRNA or protein sequences against the genome and creates a genome annotation</description>
+  <command>~/bin/octave_start_script.sh "setup_mgene; transcript2anno('$genome', '$genome.extra_files_path', '$fasta_stringency', 
+        'est', 
+        #for $q in $estfiles
+            '${q.fasta_input}', '${q.fasta_input.extra_files_path}',
+        #end for
+        'cDNA', 
+        #for $q in $cdnafiles
+            '${q.fasta_input}', '${q.fasta_input.extra_files_path}',
+        #end for
+        'protein', 
+        #for $q in $proteinfiles
+            '${q.fasta_input}', '${q.fasta_input.extra_files_path}',
+        #end for
+        '$Annotation', '$Annotation.extra_files_path');">> $Log_File</command>
+  <inputs>
+    <param format="gio" name="genome" type="data" label="Genome information file in GIO format" help="Genome information file containing information about the chromosomes/contigs of the genome. It can be created with the GenomeTool."/>
+    <repeat name="estfiles" title="EST file">
+      <param format="fasta" name="fasta_input" type="data" label="EST Sequence file" help="File in FASTA format containing EST sequences to be aligned against the genome."/>
+    </repeat>
+    <repeat name="cdnafiles" title="cDNA file">
+      <param format="fasta" name="fasta_input" type="data" label="cDNA Sequence file" help="File in FASTA format containing cDNA sequences to be aligned against the genome."/>
+    </repeat>
+    <repeat name="proteinfiles" title="Protein file">
+      <param format="fasta" name="fasta_input" type="data" label="Protein Sequence file" help="File in FASTA format containing protein sequences to be aligned against the genome."/>
+    </repeat>
+    <param name="fasta_stringency" type="select" label="Alignment stringency" help="">
+      <option value="strict">Strict (high quality sequences from same organism)</option>
+      <option value="medium">Intermediate (low quality sequences or from closely related organism)</option>
+      <option value="loose">Loose (from other organism)</option>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="gann" name="Annotation" type="data" label="Partial genome annotation created from the alignments" help=""/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+.. class:: infomark
+
+**What it does**
+
+Aligns mRNA or protein sequences against the genome to infer exon and introns.
+
+
+**This tool is still under construction !!**
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+
+</help>
+</tool>

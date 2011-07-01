@@ -1,0 +1,167 @@
+<tool id="genepredict_0.3" name="GenePredict" version="0.3">
+  <description>Genome-wide gene prediction using the trained mGene system</description>
+  <command>
+	/home/galaxy/svn/projects/mGene_core/webserver/gene_predict.sh 
+	$genome.extra_files_path
+	#if $history_vs_pretrained.source=="pretrained"
+		none
+		gene:$history_vs_pretrained.organism
+	#else
+		$Trained_Gene_Predictor
+		$Trained_Gene_Predictor.extra_files_path
+	#end if
+	$tss
+	$tss.extra_files_path
+	$tis
+	$tis.extra_files_path
+	$acc
+	$acc.extra_files_path
+	$don
+	$don.extra_files_path
+	$stop
+	$stop.extra_files_path
+	$cleave
+	$cleave.extra_files_path
+	$intergenic
+	$intergenic.extra_files_path
+	$utr5exon
+	$utr5exon.extra_files_path
+	$cds_exon
+	$cds_exon.extra_files_path
+	$intron
+	$intron.extra_files_path
+	$utr3exon
+	$utr3exon.extra_files_path
+	$Gene_Predictions
+	$Gene_Predictions.extra_files_path
+
+	#if $tracks.track_opts=="use_rna_seq_data"
+		track_function=add_reads_from_bam
+        track_file=${tracks.track_file.extra_files_path}/alignments.bam
+        track_name=exon_track
+        track_param=exon_track,intron_track,intron_list
+        track_monoton_function=exon_increase
+        track_function=add_reads_from_bam
+        track_file=
+        track_name=intron_track
+        track_param=
+		segment_feature_function=add_reads_from_bam
+		segment_feature_file=
+		segment_feature_param=
+		segment_feature_monoton_function=intron_increase
+    #end if
+
+	#if $tracks.track_opts=="use_auxiliary_data"
+		track_function=add_generic_track
+		track_file=${tracks.track_file.extra_files_path}/galaxy
+		track_name=some_track
+		track_param=
+		track_monoton_function=no_monoton_constraints
+	#end if
+	$Log_File 
+
+  </command>
+  <inputs>
+    <param format="gio" name="genome" type="data" label="Genome information file" help="Internal representation of the genomic sequence (eg, chromosomes or contigs) in which to predict genes. The GIO file can be created with the 'GenomeTool'."/>
+    <conditional name="history_vs_pretrained">
+      <param name="source" type="select" label="Predictor source" help="">
+        <option value="history">Predictor from current history</option>
+	<option value="pretrained">Pretrained predictor</option>
+      </param>
+      <when value="history"> 
+	<param format="tgp" name="Trained_Gene_Predictor" type="data" label="Trained Gene Predictor" help="A trained gene predictor can be obtained by running 'mGeneTrain'."/>
+      </when>
+      <when value="pretrained"> 
+	<param name="organism" type="select" label="Organism" help="">
+          <!--- <option value="elegans">Caenorhabditis elegans</option> -->
+          <!--- <option value="arabidopsis">Arabidopsis thaliana</option> -->
+      </param>
+      </when>
+    </conditional>
+
+    <param format="spf" name="tss" type="data" label="Genome-wide Transcription start site predictions"/>
+    <param format="spf" name="tis" type="data" label="Genome-wide Translation initiation site predictions"/>
+    <param format="spf" name="acc" type="data" label="Genome-wide Acceptor splice site predictions"/>
+    <param format="spf" name="don" type="data" label="Genome-wide Donor splice site predictions"/>
+    <param format="spf" name="stop" type="data" label="Genome-wide Stop codon predictions"/>
+    <param format="spf" name="cleave" type="data" label="Genome-wide Cleavage site predictions"/>
+
+    <param format="spf" name="intergenic" type="data" label="Genome-wide intergenic content predictions"/>
+    <param format="spf" name="utr5exon" type="data" label="Genome-wide 5' UTR Content predictions"/>
+    <param format="spf" name="cds_exon" type="data" label="Genome-wide CDS Exon Content predictions"/>
+    <param format="spf" name="intron" type="data" label="Genome-wide Intron Content predictions"/>
+    <param format="spf" name="utr3exon" type="data" label="Genome-wide 3' UTR Content predictions"/>
+
+    <conditional name="tracks">
+      <param name="track_opts" type="select" label="auxiliary data" help="You can provide a bam file with RNA-Seq alignments. In this case the system will use the exon coverage, the intron coverage and intron lists as additional evidence for exons and introns. Select 'Use generic track' to incorporate any type of real valued data. Use the write_tracks function to parse the data from a bed-file.">
+	<option value="no_auxiliary_data">-none-</option>
+	<option value="use_rna_seq_data">Use read alignments in bam format</option>
+	<option value="use_auxiliary_data">Use generic track</option>
+      </param>
+      <when value="no_auxiliary_data">
+      </when>
+      <when value="use_rna_seq_data">
+        <param format="rqt" name="track_file" type="data" label="auxiliary data->track file" help="Use the module write_tracks to create a track from a sam file"/>
+      </when>
+      <when value="use_auxiliary_data">
+        <param format="rqt" name="track_file" type="data" label="auxiliary data->track file" help="Use the module write_tracks to create a track from a sam or bed file"/>
+      </when>
+    </conditional>
+
+  </inputs>
+  <outputs>
+    <data format="gff3" name="Gene_Predictions" label="Genome-wide Gene Predictions"/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool finally runs the trained gene predictor, using the
+genome-wide signal and content predictions, to predict genes on the
+provided genomic sequence.  To this end, it computes a segmentation of
+the sequence such that the segment types optimally agree with the
+predicted contents and the segment boundaries optimally match the
+predicted signals.
+
+The required computation time may be up to 3h/Mbp.
+
+------
+
+**Output**
+
+The output consistes of a set of predicted genes that is stored in a
+file in GFF3 format.  It may be analyzed with 'GeneEval'.
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+**GFF format** General Feature Format is a format for describing genes and other features associated with DNA, RNA and Protein sequences. GFF lines have nine tab-separated fields::
+
+    1. seqname - Must be a chromosome or scaffold.
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. The first base is numbered 1.
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Valid entries include '+', '-', or '.' (for don't know/care).
+    8. frame - If the feature is a coding exon, frame should be a number between 0-2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+**SPF format** Signal Prediction format was designed for providing
+information such as labels or predictions for specific genomic
+locations (with strand information). It has requires exactly six
+fields::
+
+    1. chrom - The name of the chromosome (e.g. chr1, chrY_random).
+    2. signalName - possible choices include tss, tis, acc, don, cdsStop, cleave.
+    3. scoreName - possible choices include label, output, Conf, Conf_Cum
+    4. chromPos - The position in the chromosome. (The first base in a chromosome is numbered 1.)
+    5. strand - Defines the strand - either '+' or '-'.
+    6. score - The score between -infinity and infinity. If scoreName is 'label', then the score should be either -1 or 1.
+
+</help>
+</tool>

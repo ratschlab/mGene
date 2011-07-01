@@ -1,0 +1,99 @@
+<tool id="gff2label_0.3" name="GFF2Label" version="0.3">
+  <description>Generates labeled positions from GFF3 annotations</description>
+  <command>~/bin/octave_start_script.sh "setup_mgene; gff2label('$gff_input', '$Signal_Labels', '$Signal_Labels.extra_files_path', '$Genome_Information.extra_files_path', $coding, '$signal_name', 1, 1); ">> $Log_File </command>
+  <inputs>
+    <param format="gio" name="Genome_Information" type="data" label="Genome information file" help="Genome information file containing information about the chromosomes/contigs of the genome. It can be created with the GenomeTool."/>
+    <param format="gff3" name="gff_input" type="data" label="Genome annotation in GFF3 format" help="Partial genome annotation in GFF3 format describing the known gene structures for the provided genome."/>
+    <param name="signal_name" type="select" label="Genomic signal to be extracted from the GFF annotation file" help="The transcription start site and cleavage site define the 5 and 3 end of the transcript. The splice sites the boundaries between exons and introns and the translation initiation site and stop codon defined the start and end of the protein coding region.">
+      <option value="tss">Transcription Start Site</option>
+      <option value="tis">Translation Initation Site</option>
+      <option value="acc">Acceptor Splice Site</option>
+      <option value="don">Donor Splice Site</option>
+      <option value="cdsStop">Stop Codon</option>
+      <option value="cleave">Cleave site</option>
+    </param>
+    <param name="coding" type="select" label="Should the coding or non-coding annotation be used?" help="GFF3 files contain often contain two partially redundant sets of information. One set describes only the exon boundaries (coding status ignored) and the other describes the 5' UTR, coding and 3' UTR regions. Here one has to choose which set of information should be used. For transcription starts, the cleavage site and the splice sites the knowledge coding status is unnecessary.">
+      <option value="1">Consider coding annotation</option>
+      <option value="0">Consider non-coding annotation</option>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="spf" name="Signal_Labels" label="Label file in SPF format"/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+
+  <help>
+
+**What it does**
+
+This tool reads an annotation file in GFF3 format and uses it together
+with an genome object to generate labeled genomic positions for the
+selected signal. Positive examples are generated as they are annotated
+(e.g. transcription starts as annotated 5' ends of transcripts). We
+use the regions covered by transcripts in the GFF3 file to generate
+negative examples at all consensus positions unless they were labeled
+positive. For transcription start and cleavage sites we use a
+subsample the large set of non-positive examples to obtain negative
+examples. The output is a file in signal prediction format (SPF)
+providing the chromosome/contig, position, strand and the label of the
+example.
+
+--------
+
+**Example**
+
+When chosing the signal "Acceptor Splice Site" and to ignore coding regions, the following data in GFF3 format::
+
+   CHR1	TAIR8	gene	        11649	13714	.	-	.	ID=AT1G01030;Name=AT1G01030
+   CHR1	TAIR8	mRNA	        11649	13714	.	-	.	ID=AT1G01030.1;Parent=AT1G01030;Name=AT1G01030.1;Index=1
+   CHR1	TAIR8	exon	        13335	13714	.	-	.	Parent=AT1G01030.1
+   CHR1	TAIR8	exon	        11649	13173	.	-	.	Parent=AT1G01030.1
+
+will lead to the following output in Signal Prediction Format (SPF)::
+
+   ...
+   CHR1	acc	label	13099	-	-1.000
+   CHR1	acc	label	13105	-	-1.000
+   CHR1	acc	label	13160	-	-1.000
+   CHR1	acc	label	13165	-	-1.000
+   CHR1	acc	label	13173	-	1.000
+   CHR1	acc	label	13225	-	-1.000
+   CHR1	acc	label	13321	-	-1.000
+   CHR1	acc	label	13329	-	-1.000
+   CHR1	acc	label	13334	-	-1.000
+   ...
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+**GFF format** General Feature Format is a format for describing genes
+and other features associated with DNA, RNA and Protein sequences. GFF
+lines have nine tab-separated fields::
+
+    1. seqname - Must be a chromosome or scaffold.
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. The first base is numbered 1.
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Valid entries include '+', '-', or '.' (for don't know/care).
+    8. frame - If the feature is a coding exon, frame should be a number between 0-2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+**SPF format** Signal Prediction format was designed for providing
+information such as labels or predictions for specific genomic
+locations (with strand information). It has requires exactly six
+fields::
+
+    1. chrom - The name of the chromosome (e.g. chr1, chrY_random).
+    2. signalName - possible choices include tss, tis, acc, don, cdsStop, cleave.
+    3. scoreName - possible choices include label, output, Conf, Conf_Cum
+    4. chromPos - The position in the chromosome. (The first base in a chromosome is numbered 1.)
+    5. strand - Defines the strand - either '+' or '-'.
+    6. score - The score between -infinity and infinity. If scoreName is 'label', then the score should be either -1 or 1.
+
+</help>
+</tool>

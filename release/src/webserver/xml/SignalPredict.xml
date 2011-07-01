@@ -1,0 +1,110 @@
+<tool id="signalpredict_0.3" name="SignalPredict" version="0.3">
+  <description>Applies a trained signal predictor to the whole genome</description>
+  <command>~/bin/octave_start_script.sh "rmpath('/home/galaxy/mgene_galaxy'); addpath('/home/galaxy/svn/projects/mGene_core/'); paths; signal_predict(
+  	#if $history_vs_pretrained.source=="pretrained"
+          'signal:$history_vs_pretrained.organism:$history_vs_pretrained.signal_name', 
+        #else
+          '$history_vs_pretrained.Trained_Signal_Predictor.extra_files_path', 
+        #end if
+        '$Genome_Information.extra_files_path', '$Signal_Predictions', '$Signal_Predictions.extra_files_path', -1);" >> $Log_File; ~/bin/cleanup_output.sh $Log_File </command>
+  <inputs>
+    <param format="gio" name="Genome_Information" type="data" label="Genome information file" help="Internal representation of the genomic sequence (eg, chromosomes or contigs) in which to predict signals. The GIO file can be created with 'GenomeTool'."/>
+    <conditional name="history_vs_pretrained">
+      <param name="source" type="select" label="Predictor source" help="">
+        <option value="pretrained">Pretrained predictor</option>
+	<option value="history">Predictor from current history</option>
+      </param>
+    <when value="history"> 
+      <param format="tsp" name="Trained_Signal_Predictor" type="data" label="Trained Signal Predictor" help="This refers to an internal data structure (in TSP format) describing a trained SVM classifier for a specific signal. It can be created with 'SignalTrain'."/>
+    </when>
+    <when value="pretrained"> 
+      <param name="organism" type="select" label="Organism" help="">
+        <option value="A_gambia">Anopheles gambiae</option>
+        <option value="A_thaliana">Arabidopsis thaliana</option>
+        <option value="A_nidulans">Aspergillus nidulans</option>
+        <option value="elegans">Caenorhabditis elegans</option>
+        <option value="C_savignyi">Ciona savignyi</option>
+        <option value="D_melanogaster">Drosophila melanogaster</option>
+        <option value="H_sapiens">Homo sapiens</option>
+        <option value="T_nigroviris">Tetraodon nigroviridis</option>
+        <option value="S_cerevisiae">Saccharomyces cerevisiae</option>
+      </param>
+      <param name="signal_name" type="select" label="Genomic signal for which predictions should be generated" help="">
+	<option value="tss">Transcription Start Site</option>
+	<option value="tis">Translation Initation Site</option>
+	<option value="acc">Acceptor Splice Site</option>
+	<option value="don">Donor Splice Site</option>
+	<option value="cdsStop">Stop Codon</option>
+	<option value="cleave">Cleave site</option>
+      </param>
+    </when>
+  </conditional>
+  </inputs>
+  <outputs>
+    <data format="spf" name="Signal_Predictions" label="Signal Predictions in SPF format"/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool runs the trained signal predictor, supplied as a TSP file,
+on the given genomic sequences, as encoded in the GIO file.  It
+performs the following steps:
+
+1. All candidate locations in the sequence are collected.  For signals
+that have a mandatory consensus sequence, like AG for acceptor splice
+sites, all occurences (and only those) qualify as candidates.  For
+signals without mandatory consensus sequence, like transcription start
+sites, every single nucleotide qualifies.
+
+2. Around each candidate, a sequence window (the extent of which is
+specified in the TSP file) is copied from the genomic sequence.  This
+window serves as input for the trained SVM, which computes a
+corresponding output score.  The higher the score, the more likely
+that the candidate is indeed an example of the signal under
+consideration.
+
+------
+
+**Output**
+
+The output is a file in signal prediction format (SPF) which contains
+a prediction score for each candidate location in the genomic input
+sequence.
+
+The output may typically serve as input for 'GeneTrain'.  It can also
+be analyzed with 'SignalEval'.
+
+------
+
+**Example**
+
+A signal predictor for acceptor splice sites may provided the following outputs::
+
+   CHR1	acc	Conf_cum	731	+	0.239
+   CHR1	acc	Conf_cum	734	+	0.264
+   CHR1	acc	Conf_cum	764	+	0.857
+   CHR1	acc	Conf_cum	766	+	0.115
+   CHR1	acc	Conf_cum	784	+	0.085
+
+--------
+
+.. class:: infomark
+
+**About formats**
+
+**SPF format** Signal Prediction format was designed for providing
+information such as labels or predictions for specific genomic
+locations (with strand information). It has requires exactly six
+fields::
+
+    1. chrom - The name of the chromosome (e.g. chr1, chrY_random).
+    2. signalName - possible choices include tss, tis, acc, don, cdsStop, cleave.
+    3. scoreName - possible choices include label, output, Conf, Conf_Cum
+    4. chromPos - The position in the chromosome. (The first base in a chromosome is numbered 1.)
+    5. strand - Defines the strand - either '+' or '-'.
+    6. score - The score between -infinity and infinity. If scoreName is 'label', then the score should be either -1 or 1.
+
+</help>
+</tool>

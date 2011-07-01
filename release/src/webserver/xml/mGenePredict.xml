@@ -1,0 +1,205 @@
+<tool id="mgenepredict_0.3" name="mGenePredict" version="0.3">
+  <description>Predicts genes using a trained mGene system</description>
+  <command>~/bin/octave_start_script.sh "setup_mgene; mgene_predict(
+    #if $history_vs_internal.source=="internal"
+    'genome:$history_vs_internal.organism', '', 
+    #else
+    '$history_vs_internal.fasta_input', '$history_vs_internal.fasta_input.extra_files_path', 
+    #end if
+    #if $history_vs_pretrained.source=="pretrained"
+    '', 'mgene:$history_vs_pretrained.organism', 
+    #else
+    '$Trained_mGene_Predictor', '$Trained_mGene_Predictor.extra_files_path', 
+    #end if
+    '$gfffile', '$gfffile.extra_files_path', -1);">> $Log_File ; ~/bin/cleanup_output.sh $Log_File</command>
+  <inputs>
+    <conditional name="history_vs_internal">
+      <param name="source" type="select" label="Source of genome sequence" help="">
+        <option value="history">From current history</option>
+	<option value="internal">From internal database</option>
+      </param>
+      <when value="history"> 
+	<param format="fasta" name="fasta_input" type="data" label="Genomic sequence" help="File in FASTA format containing DNA sequences"/>
+      </when>
+      <when value="internal"> 
+	<param name="organism" type="select" label="Organism" help="">
+          <option value="c_elegans-ws180">Caenorhabditis elegans (WS180)</option>
+          <option value="d_melanogaster-dm5">Drosophila Melanogaster (DM5)</option>
+          <option value="a_thaliana-tair8">Arabidopsis thaliana (TAIR8)</option>
+
+	  <option value="a_aegypti-AaegL1.53">Aedes aegypti (AaegL1.53)</option>
+          <option value="a_carolinensis-AnoCar1.0.53">Anolis carolinensis (AnoCar1.0.53)</option>
+          <option value="a_gambiae-AgemP3.53">Anopheles gambiae (AgemP3.53)</option>
+       	  <option value="b_taurus-Btau_4.0.53">Bos taurus (Btau_4.0.53)</option>
+	  <option value="c_elegans-ws200">Caenorhabditis elegans (WS200)</option>
+          <option value="c_familiaris-BROADD2.53">Canis familiaris (BROADD2.53)</option>
+	  <option value="c_hoffmanni-choHof1.53">Choloepus hoffmanni (choHof1.53)</option>
+          <option value="c_intestinalis-JGI2.53"> Ciona intestinalis (JGI2.53)</option>
+	  <option value="c_porcellus-GUINEAPIG.53">Cavia porcellus (GUINEAPIG.53)</option>
+          <option value="c_savignyi-CSAV2.0.53">Ciona savignyi (CSAV2.0.53)</option>
+ 	  <option value="d_melanogaster-BDGP5.4.53">Drosophila Melanogaster (BDGP5.4.53)</option>
+          <option value="d_novemcinctus-dasNov2.53">Dasypus novemcinctus (dasNov2.53)</option>
+	  <option value="d_ordii-dipOrd1.53">Dipodomys ordii (dipOrd1.53)</option>         
+	  <option value="d_rerio-ZFISH7.53">Danio rerio (ZFISH7.53)</option>
+	  <option value="e_caballus-EquCab2.53">Equus caballus (EquCab2.53)</option>         
+	  <option value="e_europaeus-HEDGEHOG.53">Erinaceus europaeus (HEDGEHOG.53)</option>
+	  <option value="e_telfairi-TENREC.53">Echinops telfairi (TENREC.53)</option>
+	  <option value="f_catus-CAT.53">Felis catus (CAT.53)</option>
+	  <option value="g_aculeatus-BROADS1.53">Gasterosteus aculeatus (BROADS1.53)</option>
+          <option value="g_gallus-WASHUC2.53">Gallus gallus (WASHUC2.53)</option>
+	  <option value="g_gorilla-gorGor1.53">Gorilla gorilla (gorGor1.53)</option>       
+	  <option value="h_sapiens-NCBI36.53">Homo sapiens (NCBI36.53)</option>
+	  <option value="l_africana-loxAfr2.53">Loxodonta africana (loxAfr2.53)</option>
+	  <option value="m_domestica-BROADO5.53">Monodelphis domestica (BROADO5.53)</option>
+          <option value="m_lucifugus-MICROBAT1.53">Myotis lucifugus (MICROBAT1.53)</option>
+          <option value="m_mulatta-MMUL_1.53">Macaca mulatta (MMUL_1.53)</option>
+	  <option value="m_murinus-micMur1.53">Microcebus murinus (micMur1.53)</option>
+	  <option value="m_musculus-NCBIM37.53">Mus musculus (NCBIM37.53)</option>
+          <option value="o_anatinus-OANA5.53">Ornithorhynchus anatinus (OANA5.53)</option>
+          <option value="o_cuniculus-RABBIT.53">Oryctolagus cuniculus (RABBIT.53)</option>
+          <option value="o_garnettii-BUSHBABY1.53">Otolemur garnettii (BUSHBABY1.53)</option>
+          <option value="o_latipes-MEDAKA1.53">Oryzias latipes (MEDAKA1.53)</option>
+          <option value="o_princeps-pika.53">Ochotona princeps (pika.53)</option>
+          <option value="p_capensis-proCap1.53">Procavia capensis (proCap1.53)</option>
+          <option value="p_pygmaeus-PPYG2.53">Pongo pygmaeus (PPYG2.53)</option>
+          <option value="p_troglodytes-CHIMP2.1.53">Pan troglodytes (CHIMP2.1.53)</option>
+          <option value="p_vampyrus-pteVam1.53">Pteropus vampyrus (pteVam1.53)</option>
+          <option value="r_norvegicus-RGSC3.4.53">Rattus norvegicus (RGSC3.4.53)</option>
+          <option value="s_araneus-COMMON_SHREW1.53">Sorex araneus (COMMON_SHREW1.53)</option>
+  	  <option value="s_cerevisiae-SGD1.01.53">Saccharomyces cerevisiae (SGD1.01.53)</option>
+          <option value="s_tridecemlineatus-SQUIRREL.52">Spermophilus tridecemlineatus (SQUIRREL.52)</option>
+          <option value="t_belangeri-TREESHREW.53">Tupaia belangeri (TREESHREW.53)</option>
+          <option value="t_guttata-taeGut3.2.4.53">Taeniopygia guttata (taeGut3.2.4.53)</option>
+          <option value="t_nigroviridis-TETRAODON8.53">Tetraodon nigroviridis (TETRAODON8.53)</option>
+          <option value="t_rubripes-FUGU4.53">Takifugu rubripes (FUGU4.53)</option>
+          <option value="t_syrichta-tarSyr1.53">Tarsius syrichta (tarSyr1.53)</option>
+          <option value="t_truncatus-turTru1.53">Tursiops truncatus (turTru1.53)</option>
+          <option value="v_pacos-vicPac1.53">Vicugna pacos (vicPac1.53)</option>
+          <option value="x_tropicalis-JGI4.1.53">Xenopus tropicalis (JGI4.1.53)</option>
+	</param>
+      </when>
+    </conditional>
+    <conditional name="history_vs_pretrained">
+      <param name="source" type="select" label="Predictor source" help="">
+	<option value="pretrained">Pretrained predictor</option>
+        <option value="history">Predictor from current history</option>
+      </param>
+      <when value="pretrained"> 
+	<param name="organism" type="select" label="Organism" help="">
+          <option value="elegans">Caenorhabditis elegans</option> 
+          <option value="arabidopsis">Arabidopsis thaliana</option> 
+      </param>
+      </when>
+      <when value="history"> 
+	<param format="tmgp" name="Trained_mGene_Predictor" type="data" label="Trained mGene Predictor"/>
+      </when> 
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="gff3" name="gfffile" label="mGene Gene predictions in GFF3 format" help="Genome annotation in GFF3 format describing the mGene gene structure prediction for the provided genome."/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+
+.. class:: infomark
+
+**What it does**
+
+This tool predicts protein-coding genes on the complete sequence given
+in the FASTA file. The output will be given as a GFF3 file. For some
+organisms we have already trained a model. To use one of those, choose
+"Pretrained predictor" as *Predictor source* and check the list of
+organisms. If your organism of interest is not included in that list,
+you can use mGeneTrain to train a model yourself. However,
+you will need some annotated genes in a GFF3 file for this task.
+
+
+**Input**
+
+* To run an example, go to the "Examples and Instructions" tool
+  and upload one of the example data sets provided,
+  e.g., "Caenorhabditis elegans (small part of chromosome II)". A FASTA
+  file and a GFF3 file will appear in your History. Now choose
+  the FASTA file as input for this tool. Then choose "Pretrained
+  predictor" as *Predictor source* and select "Caenorhabditis elegans".
+
+* To run the tool on your own data, upload a sequence file (in FASTA
+  format) from your computer with the "Upload file". It will then
+  appear in the History. Alternatively, you can also get FASTA files from one
+  of the connected databases like UCSC by choosing the "Get Data" tool. 
+
+* If you have previously run mGeneTrain, this has generated an output
+  file in TmGP format. You can use this model by choosing "Predictor
+  from current history" and picking the TmGP file. Otherwise, choose
+  "Pretrained predictor" and pick the model from the list of pre-trained models. 
+
+**Common Errors**
+
+**Estimated run time**
+
+* To run the small "Caenorhabditis elegans" example (~6000bp sequence) should not take longer than 45 minutes.
+
+**Output**
+
+
+* The tool will generate a GFF3 file containing all predicted
+  genes. To assess the quality of the prediction, use
+  mGeneEval and compare it to another annotation on the same sequence.
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+
+**FASTA format** A sequence in FASTA format begins with a single-line
+description, followed by lines of sequence data. The description line
+is distinguished from the sequence data by a "greater than" (>) symbol
+in the first column. The token until the first space or the end of the 
+line is used as an identifier for the sequence. The remainder of the 
+description line is ignored.
+
+An example sequence in FASTA format is:
+
+>CHR1
+
+CCCTAAACCCTAAACCCTAAACCCTAAACCTCTGAATCCTTAATCCCTAAATCCCTAAAT
+CTTTAAATCCTACATCCATGAATCCCTAAATACCTAATTCCCTAAACCCGAAACCGGTTT
+CTCTGGTTGAAAATCATTGTGTATATAATGATAATTTTATCGTTTTTATGTAATTGCTTA
+TTGTTGTGTGTAGATTTTTTAAAAATATCATTTGAGGTCAATACAAATCCTATTTCTTGT
+GGTTTTCTTTCCTTCACTTAGCTATGGATGGTTTATCTTCATTTGTTATATTGGATACAA
+GCTTTGCTACGATCTACATTTGGGAATGTGAGTCTCTTATTGTAACCTTAGGGTTGGTTT
+ATCTCAAGAATCTTATTAATTGTTTGGACTGTTTATGTTTGGACATTTATTGTCATTCTT
+ACTCCTTTGTGGAAATGTTTGTTCTATCAATTTATCTTTTGTGGGAAAATTATTTAGTTG
+TAGGGATGAAGTCTTTCTTCGTTGTTGTTACGCTTGTCATCTCATCTCTCAATGATATGG
+GATGGTCCTTTAGCATTTATTCTGAAGTTCTTCTGCTTGATGATTTTATCCTTAGCCAAA
+AGGATTGGTGGTTTGAAGACACATCATATCAAAAAAGCTATCGCCTCGACGATGCTCTAT
+TTCTATCCTTGTAGCACACATTTTGGCACTCAAAAAAGTATTTTTAGATGTTTGTTTTGC
+...
+
+**GFF3 format** General Feature Format is a format for describing genes
+and other features associated with DNA, RNA, and protein sequences. GFF
+lines have nine tab-separated fields:
+
+    1. seqname - The name of the chromosome or scaffold (e.g., chr1, chrY_random).
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. (The first base on a chromosome is numbered 1.)
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Defines the strand - either '+' or '-'.
+    8. frame - If the feature is a coding exon, *frame* should be a number between 0 and 2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+For more information see http://www.sequenceontology.org/gff3.shtml
+
+
+**TmGP format** Trained mGene Predictor is an internal structure that
+contains the complete trained model including all signal and content
+predictors as well as the gene predictor to predict genes from DNA
+sequences.
+
+</help>
+</tool>

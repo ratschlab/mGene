@@ -1,0 +1,150 @@
+<tool id="gff2anno_0.3" name="GFF2Anno" version="0.3">
+  <description>Generates an annotation gene structure object (AGS)</description>
+  <command>~/bin/octave_start_script.sh "setup_mgene;
+    gff2anno('$genome.extra_files_path','$gff_input', '$Annotation', '$Annotation.extra_files_path', '$version.ver', 
+    #if $version.ver=="other"
+    '$version.seqids.seqid_names', '$version.source.source_names', 'level:$version.level1:$version.level2:$version.level3_coding:$version.level3_additional', 0, -1, '$version.converters') ;
+    #else
+    '-','-','-', 0, -1, '') ;
+    #end if 
+    ">>  $Log_File; ~/bin/cleanup_output.sh $Log_File </command>
+  
+  <inputs>
+    <param format="gio" name="genome" type="data" label="Genome information file" help="Genome information file in GIO format containing information about the chromosomes/contigs of the genome. It can be created with the GenomeTool."/>
+    <param format="gff3" name="gff_input" type="data" label="Genome annotation in GFF3 format" help="Partial genome annotation in GFF3 format describing the known gene structures for the provided genome."/>
+    <conditional name="version">
+      <param name="ver" type="select" label="Version of GFF3 file" help="Specify which lines are parsed in your GFF3 file">
+	<option value="wormbase">Wormbase GFF3 format</option>
+	<option value="flybase">Flybase GFF3 format</option>
+	<option value="tair">Tair8 GFF3 format</option>
+	<option value="ensembl-gtf">Ensembl GTF format</option>
+	<option value="other">Specify the version yourself</option>
+      </param>
+      <when value="wormbase">
+	
+      </when>
+      <when value="flybase">
+      
+      </when>
+      <when value="tair">
+	
+      </when>
+      <when value="ensembl-gtf">
+	
+      </when>
+      <when value="other"> 
+	<param name="converters" type="select" label="Conversions before extracting the information" help="Please choose which conversions should be applied before reading the information. For instance, files in Gene Transfer Format (GTF) can be easily transformed into GFF3 files." multiple="true" display="checkboxes"  accept_default="true">
+	  <option value="gtf-to-gff3" selected="false" help="">GTF-to-GFF3</option>
+	  <option value="correct-tis-stop" selected="false" help="">Correct translation start and stop sites</option>
+	</param>
+	
+	<conditional name="seqids">
+	  <param name="seq" type="select" label="filter for the following seqids (column 1)" help="">
+	    <option value="use_all_sequids">use all sequids</option>
+	    <option value="filter_seqids">only parse lines with following seqids:</option>
+	  </param>
+	  <when value="use_all_sequids"> 
+	    <param name="seqid_names" type="hidden" value="-"/>
+	  </when>
+	  <when value="filter_seqids">
+	    <param name="seqid_names" type="text" label="considered seqids" help="" value="-"/>
+	  </when>
+	</conditional>
+	
+	<conditional name="source">
+	  <param name="source_option" type="select" label="filter for source (column 2)" help="">
+	    <option value="use_all_sources">use all sources</option>
+	    <option value="Coding_transcript">use 'Coding_transcript' only</option>
+	    <option value="other">use only the following sources:</option>
+	  </param>
+	  <when value="use_all_sources">
+	    <param name="source_names" type="hidden" value="-"/>
+	  </when>
+	  <when value="Coding_transcript"> 
+	    <param name="source_names" type="hidden" value="Coding_transcript"/>
+	  </when>
+	  <when value="other">
+	    <param name="source_names" type="text" label="considered sources" value="-" help=""/>
+	  </when>
+	</conditional>
+	
+	
+	<param name="level1" type="select" label="parse following types for genes (column 3)" help="" multiple="true" display="checkboxes"  accept_default="true">
+	  <option value="gene" selected="true">gene </option>
+	  <option value="mRNA">mRNA</option>
+	</param>
+	<param name="level2" type="select" label="parse following types for transcripts (column 3)" help="" multiple="true" display="checkboxes">
+	  <option value="mRNA" selected="true">mRNA</option>
+	</param>
+	<param name="level3_coding" type="select" label="parse following types for coding exons (column 3)" help="" multiple="true" display="checkboxes">
+	  <option value="CDS" selected="true">CDS</option>
+	  <option value="coding_exon">coding exon</option>
+          <option value="exon">exon</option>
+	</param>
+	<param name="level3_additional" type="select" label="parse following additionnal types (column 3)" help="usually, if you have selected exons and CDS exons, the remaining information can be derived from those types." multiple="true" display="checkboxes">
+	  <option value="exon" selected="true">exon</option>
+	  <option value="five_prime_UTR" selected="true">five_prime_UTR</option>
+	  <option value="three_prime_UTR" selected="true">three_prime_UTR</option>
+	</param>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="gann" name="Annotation" label="Genome Annotation in AGS format"/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  
+  <help>
+
+.. class:: infomark
+
+**What it does**
+
+This tool reads an annotation file in GFF3 format and uses it to
+generate an annotation gene structure (AGS). This tool can be used in
+conjunction with Anno2SignalLabel or Anno2ContentLabel in order to
+generate labeled examples for specific signals.
+
+--------
+
+**Example GFF3 Fragment**
+
+   CHR1	TAIR8	gene	        11649	13714	.	-	.	ID=AT1G01030;Name=AT1G01030
+   CHR1	TAIR8	mRNA	        11649	13714	.	-	.	ID=AT1G01030.1;Parent=AT1G01030;Name=AT1G01030.1;Index=1
+   CHR1	TAIR8	exon	        13335	13714	.	-	.	Parent=AT1G01030.1
+   CHR1	TAIR8	exon	        11649	13173	.	-	.	Parent=AT1G01030.1
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+**GFF format** General Feature Format is a format for describing genes
+and other features associated with DNA, RNA and Protein sequences. GFF
+lines have nine tab-separated fields::
+
+    1. seqname - Must be a chromosome or scaffold.
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. The first base is numbered 1.
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Valid entries include '+', '-', or '.' (for don't know/care).
+    8. frame - If the feature is a coding exon, frame should be a number between 0-2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+**SPF format** Signal Prediction format was designed for providing
+information such as labels or predictions for specific genomic
+locations (with strand information). It has requires exactly six
+fields::
+
+    1. chrom - The name of the chromosome (e.g. chr1, chrY_random).
+    2. signalName - possible choices include tss, tis, acc, don, cdsStop, cleave.
+    3. scoreName - possible choices include label, output, Conf, Conf_Cum
+    4. chromPos - The position in the chromosome. (The first base in a chromosome is numbered 1.)
+    5. strand - Defines the strand - either '+' or '-'.
+    6. score - The score between -infinity and infinity. If scoreName is 'label', then the score should be either -1 or 1.
+
+</help>
+</tool>

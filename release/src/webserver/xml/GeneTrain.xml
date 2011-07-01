@@ -1,0 +1,204 @@
+<tool id="genetrain_0.3" name="GeneTrain" version="0.3">
+  <description>Trains mGene using set of known genes and signal predictions</description>
+  <command>
+	/home/galaxy/svn/projects/mGene_core/webserver/gene_train.sh 
+		$genome.extra_files_path $Annotation.extra_files_path 
+		$tss $tss.extra_files_path $tis $tis.extra_files_path $acc $acc.extra_files_path $don $don.extra_files_path $stop $stop.extra_files_path $cleave $cleave.extra_files_path 
+		$intergenic $intergenic.extra_files_path $utr5exon $utr5exon.extra_files_path $cds_exon $cds_exon.extra_files_path $intron $intron.extra_files_path $utr3exon $utr3exon.extra_files_path
+		$Trained_Gene_Predictor $Trained_Gene_Predictor.extra_files_path 
+    
+    #if $options.opts=="expert" 
+    	#if $options.blocks.block_design=="merge"
+  	 block_design=merge;maxNumIter=$options.maxIter;C=$options.C;maxNumBlock=$options.maxNumBlock;block_design_merge_num=$options.blocks.block_design_merge_num;block_design_merge_sep=$options.blocks.block_design_merge_sep
+    	#end if 
+    	#if $options.blocks.block_design=="regionauto"
+   	block_design=regionauto;maxNumIter=$options.maxIter;C=$options.C;maxNumBlock=$options.maxNumBlock;block_design_regionauto_num=$options.blocks.block_design_regionauto_num
+    	#end if
+    	#if $options.blocks.block_design=="regionlist"
+    	block_design=regionlist;maxNumIter=$options.maxIter;C=$options.C;maxNumBlock=$options.maxNumBlock;block_design_regionlist=$options.blocks.regionlist
+    	#end if
+    #end if
+    #if $tracks.track_opts=="use_rna_seq_data"
+		track_function=add_reads_from_bam
+        track_file=${tracks.track_file.extra_files_path}/alignments.bam
+        track_name=exon_track
+        track_param=exon_track,intron_track,intron_list
+        track_monoton_function=exon_increase
+        track_function=add_reads_from_bam
+        track_file=
+        track_name=intron_track
+        track_param=
+		segment_feature_function=add_reads_from_bam
+		segment_feature_file=
+		segment_feature_param=
+		segment_feature_monoton_function=intron_increase
+    #end if
+    #if $tracks.track_opts=="use_auxiliary_data"
+	track_function=add_generic_track
+        track_file=${tracks.track_file.extra_files_path}/galaxy
+        track_name=some_track
+        track_param=
+        track_monoton_function=no_monoton_constraints
+    #end if
+    $Log_File 
+  </command>
+  <inputs>
+    <param format="gio" name="genome" type="data" label="Genome information file" help="Internal representation of the genomic sequence (eg, chromosomes or contigs) in which to predict genes. The GIO file can be created with the 'GenomeTool'."/>
+    <param format="gann" name="Annotation" type="data" label="Genome Annotation" help="Internal representation of genome annotation. Can be created with 'GFF2Anno'."/>
+
+    <param format="spf" name="tss" type="data" label="Genome-wide Transcription start site predictions"/>
+    <param format="spf" name="tis" type="data" label="Genome-wide Translation initiation site predictions"/>
+    <param format="spf" name="acc" type="data" label="Genome-wide Acceptor splice site predictions"/>
+    <param format="spf" name="don" type="data" label="Genome-wide Donor splice site predictions"/>
+    <param format="spf" name="stop" type="data" label="Genome-wide Stop codon predictions"/>
+    <param format="spf" name="cleave" type="data" label="Genome-wide Cleavage site predictions"/>
+
+    <param format="spf" name="intergenic" type="data" label="Genome-wide intergenic content predictions"/>
+    <param format="spf" name="utr5exon" type="data" label="Genome-wide 5' UTR Content predictions"/>
+    <param format="spf" name="cds_exon" type="data" label="Genome-wide CDS Exon Content predictions"/>
+    <param format="spf" name="intron" type="data" label="Genome-wide Intron Content predictions"/>
+    <param format="spf" name="utr3exon" type="data" label="Genome-wide 3' UTR Content predictions"/>
+    <conditional name="tracks">
+      <param name="track_opts" type="select" label="auxiliary data" help="You can provide a bam file with RNA-Seq alignments. In this case the system will use the exon coverage, the intron coverage and intron lists as additional evidence for exons and introns. Select 'Use generic track' to incorporate any type of real valued data. Use the write_tracks function to parse the data from a bed-file.">
+	<option value="no_auxiliary_data">-none-</option>
+	<option value="use_rna_seq_data">Use read alignments in bam</option>
+	<option value="use_auxiliary_data">Use generic track</option>
+      </param>
+      <when value="no_auxiliary_data">
+      </when>
+      <when value="use_rna_seq_data">
+        <param format="rqt" name="track_file" type="data" label="auxiliary data->track file" help="Use the module write_tracks to create a track from a sam file"/>
+      </when>
+      <when value="use_auxiliary_data">
+        <param format="rqt" name="track_file" type="data" label="auxiliary data->track file" help="Use the module write_tracks to create a track from a sam or bed file"/>
+      </when>
+    </conditional>
+    <conditional name="options">
+      <param name="opts" type="select" label="Training options" help="In 'Expert options' one may choose several options that allows the tuning of the gene finding system.">
+	<option value="default">Default options</option>
+	<option value="expert">Expert options</option>
+      </param>
+      <when value="default">
+      </when>
+      <when value="expert">
+	<param name="maxIter" type="integer" size="3" value="150" help="The number of iterations directly time needed for training. If chosen too small, the results will be suboptimal. If convergence criteria are met, the optimization is terminated before reaching the maximal number of iterations.">
+	  <label>Maximal number of training iterations</label>
+	</param>
+	<param name="maxNumBlock" type="integer" size="3" value="0" help="Maximal number of blocks used for training. Using more blocks typically takes longer. When choosing a too large number, the optimization may fail due to memory limitations. Choose '0' for not limiting the number of blocks.">
+	  <label>Maximal number of blocks used for training</label>
+	</param>
+	<param name="C" type="float" size="3" value="0.01" help="The regularization parameter used for penalizing the resulting gene predictor. Larger values will lead to less complex models that are expected to perform poorer on the training set, but may perform better for predicting new genes.">
+	  <label>Regularization parameter</label>
+	</param>
+	<conditional name="blocks">
+	  <param name="block_design" type="select" label="Block design" help="Training layer 2 of mGene uses blocks with one or more genes. Depending on properties of the genome annotation, one may choose one of the three options. 'Merge regions around genes' is most useful, when the annotation is incomplete and one only knows the annotation of a few genes. Then blocks are generated by concatenating regions with annotated genes. 'Automatically choose regions around clusters of genes' is useful, when the annotation consists of completely annotated regions and any consecutive sequence of genes can be used for training. 'Specify list regions for training' lets one upload a list of regions to be used for training.">
+	    <option value="merge">Merge regions around genes</option>
+	    <option value="regionauto">Automatically choose regions around clusters of genes</option>
+	    <option value="regionlist">Specify list of regions for training</option>
+	  </param>
+	  <when value="merge">
+	    <param name="block_design_merge_num" type="integer" size="2" value="3" help="">
+	      <label>Number of genes merged in one block</label>
+	    </param>
+	    <param name="block_design_merge_sep" type="integer" size="4" value="1000" help="This parameter determines how much sequence around a gene is considered as intergenic sequence. If chosen too small, the system learns a bias towards too short intergenic regions. If choosen too large, the region around the genes may include other, potentially unannotated genes and training may then lead to suboptimal results.">
+	      <label>Maximal distance of gene boundary to cut positions</label>
+	    </param>
+	  </when>
+	  <when value="regionlist">
+	    <param format="tab" name="regionlist" type="data" label="Region list" help="Provide a tab separated list with regions to be used for training (columns: seqid, start, stop, strand)."/>
+	  </when>
+	  <when value="regionauto">
+	    <param name="block_design_regionauto_num" type="integer" size="2" value="3" help="">
+	      <label>Number of genes merged in one block</label>
+	    </param>
+	  </when>
+	</conditional>
+      </when>
+    </conditional>
+
+  </inputs>
+  <outputs>
+    <data format="tgp" name="Trained_Gene_Predictor" label="Trained Gene Predictor"/>
+    <data format="txt" name="Log_File" label="Log File"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool trains the integrative layer of mGene (layer 2).  Based on
+the genome information file, the genome-wide predictions for all
+relevant signals and a set of annotated genes (in GFF3 format), mGene
+learns to predict gene structures on genomic DNA.
+
+The training time may be roughly on the order of 3h times the number
+of genes in the training set.
+
+------
+
+**Output**
+
+The output consistes of a set of predicted genes that is stored in a
+file in GFF3 format.  It may typically be used with 'GenePredict'.
+The training error may be evaluated with 'GeneEval'.
+
+------
+
+**Licenses**
+
+If mGene.web is used to obtain results for scientific publications it
+should be cited as [1]_ or [2]_.
+
+This service is based on the solving numerical optimization problems
+for tuning parameters. It uses MOSEK_, an extremely efficient
+implementation of an interior point algorithm for the solution of
+linear and mixed integer programs and convex nonlinear programs. MOSEK
+was developed by MOSEK ApS, C/O Symbion Science Park, Fruebjergvej 3,
+Box 16, 2100 Copenhagen 0, Denmark.We thank MOSEK ApS for providing
+licenses to offer this service to the public. We may occasionally pass
+anonymized optimization problems derived from submitted data to MOSEK
+ApS for benchmarking and test purposes.
+
+.. _MOSEK: http://www.mosek.com
+
+
+**References** 
+
+.. [1] Schweikert, G., Zien, A., Zeller, G., Behr, J., Dieterich, C., Ong, C., Philips, P., Bona, F. D., Hartmann, L., Bohlen, A., Kroeger, N., Sonnenburg, S., and Raetsch, G. (2009) `mGene Accurate computational gene finding with application to nematode genomes`_. Genome Research, 19, 2133-2143.
+
+.. _mGene Accurate computational gene finding with application to nematode genomes: http://www.fml.tuebingen.mpg.de/raetsch/members/raetsch/bibliography/SZZBDOPDHBKSR2009
+
+.. [2] Schweikert, G, Behr, J, Zien, A, Zeller, G, Ong, CS, Sonnenburg, S, and Rätsch, G (2009). mGene.web: a web service for accurate computational gene finding. Nucleic Acids Research, 37(Web Server Issue), W312–W316.
+
+
+------
+
+.. class:: infomark
+
+**About formats**
+
+**GFF format** General Feature Format is a format for describing genes and other features associated with DNA, RNA and Protein sequences. GFF lines have nine tab-separated fields::
+
+    1. seqname - Must be a chromosome or scaffold.
+    2. source - The program that generated this feature.
+    3. feature - The name of this type of feature. Some examples of standard feature types are "CDS", "start_codon", "stop_codon", and "exon".
+    4. start - The starting position of the feature in the sequence. The first base is numbered 1.
+    5. end - The ending position of the feature (inclusive).
+    6. score - A score between 0 and 1000. If there is no score value, enter ".".
+    7. strand - Valid entries include '+', '-', or '.' (for don't know/care).
+    8. frame - If the feature is a coding exon, frame should be a number between 0-2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be '.'.
+    9. group - All lines with the same group are linked together into a single item.
+
+**SPF format** Signal Prediction format was designed for providing
+information such as labels or predictions for specific genomic
+locations (with strand information). It has requires exactly six
+fields::
+
+    1. chrom - The name of the chromosome (e.g. chr1, chrY_random).
+    2. signalName - possible choices include tss, tis, acc, don, cdsStop, cleave.
+    3. scoreName - possible choices include label, output, Conf, Conf_Cum
+    4. chromPos - The position in the chromosome. (The first base in a chromosome is numbered 1.)
+    5. strand - Defines the strand - either '+' or '-'.
+    6. score - The score between -infinity and infinity. If scoreName is 'label', then the score should be either -1 or 1.
+
+</help>
+</tool>
