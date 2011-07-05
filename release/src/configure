@@ -61,7 +61,7 @@ done
 echo '#!/bin/bash' 									> mgene_config.sh
 echo 												>> mgene_config.sh
 
-SHOGUN_PATH=`pwd`/shogun
+SHOGUN_PATH=`dirname $0`/shogun
 if test "$USE_MATLAB" = yes
 then
 	echo use matlab interpreter
