@@ -270,7 +270,7 @@ for i=1:length(genes),
         exons(:,1) = exons(:,1)+1;
       end
       [genestr] = load_genomic(genes(i).chr, genes(i).strand, exons(:,1), exons(:,2), genome_info, 1);
-      [atg, e]=find_max_orfs(genestr, 'atg') ;
+      [atg, e]=find_max_orfs(genestr, 'atg') ;% the behaviour of this thing has changed, it does not give ORFs starting with 'atg'
       cand = find(atg~=0 & e<length(genestr)-2) ; % exclude cases with no atg or stop
       cand2 = find(atg~=0) ; % exclude cases with no atg or stop
       [cds_len, idx] = max(e(cand)-atg(cand)) ;
@@ -289,6 +289,12 @@ for i=1:length(genes),
       end ;
 
       if ~isempty(cand) && ~isempty(idx) && cds_len>min_orf_len,
+		for met = atg(cand(idx)):3:cds_len
+			if all(genestr(met:met+2)=='atg')
+				atg(cand(idx)) = met;
+				break;
+			end 
+		end
         tis_pos     = map_rna_pos(genes(i).exons{j}, genes(i).strand, atg(cand(idx))) ;
         cdsStop_pos = map_rna_pos(genes(i).exons{j}, genes(i).strand, e(cand(idx))+3+1) ;
         
