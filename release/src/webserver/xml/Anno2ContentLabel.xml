@@ -1,9 +1,20 @@
-<tool id="anno2contentlabel_0.3" name="Anno2ContentLabel" version="0.3">
+<tool id="anno2contentlabel_0.4" name="Anno2ContentLabel" version="0.4">
   <description>Generates labeled content segments from an annotation</description>
-  <command>~/bin/octave_start_script.sh "rmpath('/home/galaxy/mgene_galaxy'); addpath('/home/galaxy/svn/projects/mGene_core/'); paths; anno2contentlabel('$Annotation', '$Annotation.extra_files_path','$genome.extra_files_path', '$Content_Labels', '$Content_Labels.extra_files_path', '$content_name', [], []); ">> $Log_File </command>
+  <command interpreter="bash"> 
+	/home/galaxy/svn/releases/mGeneToolbox-0.2.0/release/bin/anno2contentlabel
+	$Annotation.extra_files_path/log
+	$Annotation.extra_files_path
+	$genome.extra_files_path
+	$Content_Labels.extra_files_path/log 
+	$Content_Labels.extra_files_path/label
+	$content_name
+	all_other 
+	default
+	>> $Log_File ~/bin/cleanup_output.sh $Log_File
+  </command>
   <inputs>
-    <param format="gio" name="genome" type="data" label="Genome information file" help="Genome information file in GIO format containing information about the chromosomes/contigs of the genome. It can be created with the GenomeTool."/>
-    <param format="gann" name="Annotation" type="data" label="Genome annotation" help="Genome annotation file in AGS format. Can be created with GFF2Anno."/>
+    <param format="gio" name="genome" type="data" label="Genome information file in GIO format" help="Genome information file in GIO format containing information about the chromosomes/contigs of the genome. It can be created with the GenomeTool."/>
+    <param format="gann" name="Annotation" type="data" label="Genome annotation in AGS format" help="Genome annotation file in AGS format. Can be created with mGene_parseGFF from a GFF3 file."/>
     <param name="content_name" type="select" label="Genomic content to be extracted from the GFF annotation file">
       <option value="intergenic">Intergenic</option>
       <option value="utr5exon">5' UTR Exon</option>

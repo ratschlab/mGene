@@ -1,44 +1,15 @@
-<tool id="signalpredict_0.3" name="SignalPredict" version="0.3">
+<tool id="signalpredict_0.4" name="SignalPredict" version="0.4">
   <description>Applies a trained signal predictor to the whole genome</description>
-  <command>~/bin/octave_start_script.sh "rmpath('/home/galaxy/mgene_galaxy'); addpath('/home/galaxy/svn/projects/mGene_core/'); paths; signal_predict(
-  	#if $history_vs_pretrained.source=="pretrained"
-          'signal:$history_vs_pretrained.organism:$history_vs_pretrained.signal_name', 
-        #else
-          '$history_vs_pretrained.Trained_Signal_Predictor.extra_files_path', 
-        #end if
-        '$Genome_Information.extra_files_path', '$Signal_Predictions', '$Signal_Predictions.extra_files_path', -1);" >> $Log_File; ~/bin/cleanup_output.sh $Log_File </command>
+  <command interpreter="bash">
+	/home/galaxy/svn/releases/mGeneToolbox-0.2.0/release/bin/signal_predict 
+	$TSP.extra_files_path/trained_predictor 
+	$GIO.extra_files_path 
+	$TSP.extra_files_path/log
+	$TSP.extra_files_path/ >> $Log_File; ~/bin/cleanup_output.sh $Log_File
+  </command>
   <inputs>
-    <param format="gio" name="Genome_Information" type="data" label="Genome information file" help="Internal representation of the genomic sequence (eg, chromosomes or contigs) in which to predict signals. The GIO file can be created with 'GenomeTool'."/>
-    <conditional name="history_vs_pretrained">
-      <param name="source" type="select" label="Predictor source" help="">
-        <option value="pretrained">Pretrained predictor</option>
-	<option value="history">Predictor from current history</option>
-      </param>
-    <when value="history"> 
-      <param format="tsp" name="Trained_Signal_Predictor" type="data" label="Trained Signal Predictor" help="This refers to an internal data structure (in TSP format) describing a trained SVM classifier for a specific signal. It can be created with 'SignalTrain'."/>
-    </when>
-    <when value="pretrained"> 
-      <param name="organism" type="select" label="Organism" help="">
-        <option value="A_gambia">Anopheles gambiae</option>
-        <option value="A_thaliana">Arabidopsis thaliana</option>
-        <option value="A_nidulans">Aspergillus nidulans</option>
-        <option value="elegans">Caenorhabditis elegans</option>
-        <option value="C_savignyi">Ciona savignyi</option>
-        <option value="D_melanogaster">Drosophila melanogaster</option>
-        <option value="H_sapiens">Homo sapiens</option>
-        <option value="T_nigroviris">Tetraodon nigroviridis</option>
-        <option value="S_cerevisiae">Saccharomyces cerevisiae</option>
-      </param>
-      <param name="signal_name" type="select" label="Genomic signal for which predictions should be generated" help="">
-	<option value="tss">Transcription Start Site</option>
-	<option value="tis">Translation Initation Site</option>
-	<option value="acc">Acceptor Splice Site</option>
-	<option value="don">Donor Splice Site</option>
-	<option value="cdsStop">Stop Codon</option>
-	<option value="cleave">Cleave site</option>
-      </param>
-    </when>
-  </conditional>
+    <param format="gio" name="GIO" type="data" label="Genome information file" help="Internal representation of the genomic sequence (eg, chromosomes or contigs) in which to predict signals. The GIO file can be created with 'GenomeTool'."/>
+    <param format="tsp" name="TSP" type="data" label="Trained Signal Predictor" help="This refers to an internal data structure (in TSP format) describing a trained SVM classifier for a specific signal. It can be created with 'SignalTrain'."/>
   </inputs>
   <outputs>
     <data format="spf" name="Signal_Predictions" label="Signal Predictions in SPF format"/>

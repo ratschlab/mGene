@@ -1,6 +1,6 @@
-<tool id="signaltrain_0.3" name="SignalTrain" version="0.3">
+<tool id="signaltrain" name="SignalTrain" version="0.4">
   <description>Trains a signal predictor using a set of labeled positions</description>
-  <command>~/bin/octave_start_script.sh "rmpath('/home/galaxy/mgene_galaxy'); addpath('/home/galaxy/svn/projects/mGene_core/'); paths; signal_train('$Signal_Labels', '$Signal_Labels.extra_files_path', '$signal_name', '$Genome_Information.extra_files_path', '$Trained_Signal_Predictor', '$Trained_Signal_Predictor.extra_files_path', -1);" >> $Log_File; ~/bin/cleanup_output.sh $Log_File</command>
+  <command interpreter="bash">/home/galaxy/svn/releases/mGeneToolbox-0.2.0/release/bin/signal_train  '-' $Signal_Labels.extra_files_path/label/ $signal_name $Genome_Information.extra_files_path $Trained_Signal_Predictor.extra_files_path/trained_predictor/log $Trained_Signal_Predictor.extra_files_path/trained_predictor 1 >> $Log_File; ~/bin/cleanup_output.sh $Log_File</command>
   <inputs>
     <param format="gio" name="Genome_Information" type="data" label="Genome information file" help="Genome information file in GIO format containing information about the chromosomes/contigs of the genome. It can be created with the GenomeTool."/>
     <param format="spf" name="Signal_Labels" type="data" label="Label file in SPF format" help="The label file contains information about the genomic locations at which a given signal occurs. It can be created with 'Anno2SignalLabel'."/>

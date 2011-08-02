@@ -19,6 +19,9 @@ pos = [] ;
 score = [] ;
 
 fd = fopen(sigpred_fname, 'r') ;
+if fd<0
+	error('could not open file for reading: %s', sigpred_fname)
+end
 
 rest_text = '' ; part = 0 ; part_offset = 0 ;
 line_idx = 0 ;

@@ -1,12 +1,6 @@
 <tool id="genometool_0.3" name="GenomeTool" version="0.3">
   <description>Creates a genome information object (GIO) from FASTA sequences</description>
-  <command>~/bin/octave_start_script.sh "rmpath('/home/galaxy/mgene_galaxy'); addpath('/home/galaxy/svn/projects/mGene_core/'); paths; genometool(
-    #if $history_vs_pretrained.source=="internal"
-    'genome:$history_vs_pretrained.organism', '', 
-    #else
-    '$history_vs_pretrained.fasta_input', '$history_vs_pretrained.fasta_input.extra_files_path', 
-    #end if
-    '$Genome_Information', '$Genome_Information.extra_files_path');" >> $Log_File; ~/bin/cleanup_output.sh $Log_File</command>
+  <command>/home/galaxy/svn/releases/mGeneToolbox-0.2.0/release/bin/genometool $history_vs_pretrained.fasta_input $history_vs_pretrained.fasta_input.extra_files_path $Genome_Information $Genome_Information.extra_files_path >> $Log_File; ~/bin/cleanup_output.sh $Log_File</command>
   <inputs>
     <conditional name="history_vs_pretrained">
       <param name="source" type="select" label="Source of genome sequence" help="">

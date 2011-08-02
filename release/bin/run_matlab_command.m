@@ -7,6 +7,7 @@ paths;
 
 try, 
 	fprintf('calling: \n\t%s(', function_name);
+	warning('off')
 	for j = 1:length(varargin)
 		if j<length(varargin)
 			fprintf('''%s'',', varargin{j})

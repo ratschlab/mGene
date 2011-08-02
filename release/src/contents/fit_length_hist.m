@@ -10,6 +10,10 @@ if nargin<4
   reduce_pos=0;
 end
 
+if isempty(neg) || isempty(pos)
+	return
+end
+
 % count lengths 
 neg_lengths = zeros(1,length(neg));
 for j=1:length(neg)

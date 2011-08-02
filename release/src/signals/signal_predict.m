@@ -127,7 +127,12 @@ disp('-------------------------------') ;
 % collect the output
 %fn_out_temp = tempname ;
 genome_info = init_genome(genome_config) ;
-fclose(fopen(fn_out, 'w+')) ;
+fd = fopen(fn_out, 'w+') ;
+if fd>0
+	fclose(fd);
+else
+	error('could not open output file: %s\n', fn_out);
+end
 cnt = 0 ;
 spf_info = [] ;
 for c = 1:length(genome_info.contig_names)

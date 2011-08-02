@@ -1,6 +1,6 @@
-<tool id="gff2anno" name="GFF2Anno">
+<tool id="mgene_parsegff" name="mGene_parseGFF">
   <description>Generates an annotation gene structure object (AGS)</description>
-  <command>~/svn/releases/mGeneToolbox-0.2.0/release/src/parsegff/GFFParser.sh $gff_input $Annotation.extra_files_path/genes.mat $genome.extra_files_path >> $Log_File; ~/bin/cleanup_output.sh $Log_File </command>
+  <command>~/svn/releases/mGeneToolbox-0.2.0/release/src/parsegff/GFFParser.sh $gff_input $Annotation.extra_files_path/genes.mat $genome.extra_files_path $Annotation >> $Log_File; ~/bin/cleanup_output.sh $Log_File </command>
   
   <inputs>
     <param format="gio" name="genome" type="data" label="Genome information file" help="Genome information file in GIO format containing information about the chromosomes/contigs of the genome. It can be created with the GenomeTool."/>

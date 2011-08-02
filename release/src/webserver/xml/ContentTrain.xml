@@ -1,9 +1,20 @@
-<tool id="contenttrain_0.3" name="ContentTrain" version="0.3">
+<tool id="contenttrain_0.4" name="ContentTrain" version="0.4">
   <description>Trains a content predictor using a set of labeled segments</description>
-  <command>~/bin/octave_start_script.sh "rmpath('/home/galaxy/mgene_galaxy'); addpath('/home/galaxy/svn/projects/mGene_core/'); paths; content_train('$Content_Labels', '$Content_Labels.extra_files_path', '$content_name', '$Genome_Information.extra_files_path','$Annotation.extra_files_path', '$Trained_Content_Predictor', '$Trained_Content_Predictor.extra_files_path', -1);" >> $Log_File</command>
+  <command interpreter="bash">
+	/home/galaxy/svn/releases/mGeneToolbox-0.2.0/release/bin/content_train 
+	$Content_Labels.extra_files_path/label/log 
+	$Content_Labels.extra_files_path/label 
+	$content_name
+	$Genome_Information.extra_files_path 
+	$Annotation.extra_files_path
+	$Trained_Content_Predictor.extra_files_path/trained_predictor/log 
+	$Trained_Content_Predictor.extra_files_path/trained_predictor 
+	1
+	>>$Log_File; ~/bin/cleanup_output.sh $Log_File
+  </command>
   <inputs>
-    <param format="gio" name="Genome_Information" type="data" label="Genome information file" help="Internal representation of the genomic sequence (eg, chromosomes or contigs) in which to predict signals. The GIO file can be created with 'GenomeTool'."/>
-    <param format="gann" name="Annotation" type="data" label="Genome annotation" help="Genome annotation file in AGS format. Can be created with GFF2Anno."/> 
+    <param format="gio" name="Genome_Information" type="data" label="Genome information file in GIO format" help="Internal representation of the genomic sequence (eg, chromosomes or contigs) in which to predict signals. The GIO file can be created with 'GenomeTool'."/>
+    <param format="gann" name="Annotation" type="data" label="Genome annotation in AGS format" help="Can be created with mGene_parseGFF from a GFF3 file."/> 
     <param format="cpf" name="Content_Labels" type="data" label="Label file in CPF format" help="The label file contains information about the genomic locations at which a given content type occurs. It can be created with 'Anno2ContentLabel'."/>
     <param name="content_name" type="select" label="Genomic content for which the predictor should be trained" help="Select the content for which a predictor is to be trained. The label file has to contain labeled genomic positions of the selected content type. 'Automatic' will select the content type with the largest number of correspondingly labled genomic segments.">
       <option value="auto">Automatic</option>

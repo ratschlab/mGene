@@ -101,7 +101,7 @@ for c = 1:length(contig_names)
     P.strand = s;
     filename = sprintf('%s/contig_%i%s', out_dir, c, s);
     fn_in = [filename '_label.spf'];
-    %ret = unix(['cat ' fn_in ' >> ' spf_fname '; rm -f ' fn_in]) ;
+    ret = unix(['cat ' fn_in ' >> ' spf_fname '; rm -f ' fn_in]) ;
     %assert(ret==0) ;
 
     fn_mat = sprintf('%s/contig_%i%s_label_spf.mat', out_dir, c, s);
@@ -115,9 +115,9 @@ for c = 1:length(contig_names)
     assert(ret==0) ;
   end ;
 end ;
-if length(spf_fname)>=3 && isequal(spf_fname(end-2:end), '.gz'),
-  unix(sprintf('mv %s %s; gzip %s', spf_fname, spf_fname(1:end-3), spf_fname(1:end-3))) ;
-end ;
+%if length(spf_fname)>=3 && isequal(spf_fname(end-2:end), '.gz'),
+%  unix(sprintf('mv %s %s; gzip %s', spf_fname, spf_fname(1:end-3), spf_fname(1:end-3))) ;
+%end ;
 
 fprintf('removing directory %s\n', out_dir);
 unix(sprintf('rm -r %s', out_dir)) ;

@@ -1,6 +1,14 @@
-<tool id="anno2label_0.3" name="Anno2SignalLabel" version="0.3">
+<tool id="anno2label_0.3" name="Anno2SignalLabel_v0.4" version="0.4">
   <description>Generates labeled positions from an annotation gene structure (AGS)</description>
-  <command>~/bin/octave_start_script.sh "warning('off', 'Octave:precedence-change'); rmpath('/home/galaxy/mgene_galaxy'); addpath('/home/galaxy/svn/projects/mGene_core/'); paths; anno2signallabel('$Annotation', '$Annotation.extra_files_path','$genome.extra_files_path', '$Signal_Labels', '$Signal_Labels.extra_files_path', '$signal_name', 1); " >> $Log_File </command>
+  <command interpreter="bash">
+	/home/galaxy/svn/releases/mGeneToolbox-0.2.0/release/bin/anno2signallabel 
+	$Signal_Labels.extra_files_path/anno2signallabel.log.tmp 
+	$Annotation.extra_files_path 
+	$genome.extra_files_path 
+	$Signal_Labels 
+	$Signal_Labels.extra_files_path/label/ $signal_name 
+	>> $Log_File ~/bin/cleanup_output.sh $Log_File
+  </command>
   <inputs>
     <param format="gio" name="genome" type="data" label="Genome information file" help="Genome information file in GIO format containing information about the chromosomes/contigs of the genome. It can be created with the GenomeTool."/>
     <param format="gann" name="Annotation" type="data" label="Genome annotation" help="Genome annotation file in AGS format. Can be created with GFF2Anno."/>
