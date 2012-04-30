@@ -1,6 +1,11 @@
 function genes = arrange_genes(filename)
     try
         l = load(filename);
+		if isfield(l, 'arrange_genes_done')
+			fprintf('arrange_genes was already applied to this file: %s', filename);
+			genes = l.genes;
+			return
+		end
     catch 
 		fprintf('could not load pre-processed annotation in .mat format %s\n', filename)
         quit; 
@@ -64,5 +69,6 @@ function genes = arrange_genes(filename)
 		genes(length(l.gene_models)-i+1) = gene; 
         x = x + 1;
     end
-    save('-v7', filename, 'genes');
+	arrange_genes_done=1;
+    save('-v7', filename, 'genes', 'arrange_genes_done');
     clear l

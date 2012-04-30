@@ -1,6 +1,6 @@
 function [genes] = CurateGenes(genome_info_path, gene_models_file)
     genome_info_file = strcat(genome_info_path, '/genome.config');
-
+	dbstop error
     disp('----------------------------------');
     disp('Step 1: Reading Genome Info in GIO');
     disp('----------------------------------'); 
@@ -23,7 +23,7 @@ function [genes] = CurateGenes(genome_info_path, gene_models_file)
     gff_chr_names = unique({genes.chr});
     unmap_chr = setdiff(gff_chr_names, genome_info.contig_names);
     if ~isempty(unmap_chr),
-        error('Warning: The Gene models from the following chromosomes/contigs are not present in Genome Info GIO:\n'); 
+        fprintf('Warning: The Gene models from the following chromosomes/contigs are not present in Genome Info GIO:'); 
         for i=1:length(unmap_chr),
             fprintf(1, '     %s\n', unmap_chr{i});
         end;

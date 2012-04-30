@@ -401,7 +401,7 @@ def organizeGenes(genes, transcripts, exons, utr5, cds, utr3):
                     if utr3_cod != []:
                         if utr3_cod[-1][1] <= exon_cod[0][0]: exon_cod = addUTR5Exon(utr3_cod, exon_cod)
                 ## find [tis, cdsStop] and [tss, cleave] for the transcript
-                tis, cdsStop, tss, cleave = [], [], [], []
+                tis, cdsStop, tss, cleave, cds_cod_phase = [], [], [], [], []
                 if cds_reg != []:
                     if gene['strand'] == '+':
                         tis = [cds_reg[0][0]]

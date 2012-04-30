@@ -1,10 +1,15 @@
 #!/bin/bash
 
-export INTERPRETER=octave
-export OCTAVE_BIN_PATH=/home/galaxy/software/octave-3.2.3-64-new/bin/octave
-export OCTAVE_OPTS=
-export MKOCT_BIN=/home/galaxy/software/octave-3.2.3-64-new/bin/mkoctfile
-export MEX_BIN=echo
-export MGENE_SRC_PATH=/home/galaxy/svn/releases/mGeneToolbox-0.2.0/release/src
-export SHOGUN_PATH=/home/galaxy/svn/releases/mGeneToolbox-0.2.0/release/src/shogun
-export LD_LIBRARY_PATH=/usr/local/sge/lib/lx26-amd64/:/home/galaxy/software/lib:/home/galaxy/lib:/home/galaxy/software/matlab-7.6/bin/glnxa64/:/home/galaxy/lib/lib/:/home/galaxy/svn/releases/mGeneToolbox-0.2.0/release/src/shogun:/home/galaxy/svn/tools/utils_octave/mosek_interface/src/linux64x86/bin:/media/lvm/sge/lib/lx26-amd64/:/usr/lib/octave-3.2.3
+export INTERPRETER=matlab
+export MATLAB_BIN_PATH=/usr/local/bin/matlab
+export MATLAB_OPTS="-nojvm -nosplash"
+export MEX_BIN=/fml/ag-raetsch/share/software/matlab/bin/mex
+export MATLAB_INCDIR=/fml/ag-raetsch/home/software/matlab-7.6/extern/include
+export MGENE_SRC_PATH=/fml/ag-raetsch/home/jonas/svn/releases/mGeneToolbox-0.2.0/release/src
+export SHOGUN_PATH=/fml/ag-raetsch/home/jonas/svn/releases/mGeneToolbox-0.2.0/release/src/shogun
+export OPTIMIZER=cplex
+export ILOG_LICENSE_FILE=
+export CPLEX_INCL=
+export CPLEX_LIB=
+export OPTIMIZER_PATH=/usr/local/bin/cplex
+

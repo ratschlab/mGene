@@ -21,22 +21,22 @@ if isequal(task, 'gff2anno')
 elseif isequal(task, 'signal_wrapper') || isequal(task, 'content_wrapper'),
   run_locally = 1 ;
 elseif isequal(task, 'signal_train:pos') || isequal(task, 'content_train:pos'),
-  run_locally = 1 ;
+  run_locally = 0 ;
 elseif isequal(task, 'signal_train:train') || isequal(task, 'content_train:train'),
-  run_locally = 1 ;
+  run_locally = 0 ;
 elseif isequal(task, 'signal_train:eval') || isequal(task, 'content_train:eval'),
-  run_locally = 1 ;
+  run_locally = 0 ;
 elseif isequal(task, 'signal_train:conf') || isequal(task, 'content_train:conf'),
-  run_locally = 1 ;
+  run_locally = 0 ;
 elseif isequal(task, 'signal_train:predict') || isequal(task, 'content_train:predict'),
-  run_locally = 1 ;
+  run_locally = 0 ;
 elseif isequal(task, 'signal_train:save') || isequal(task, 'content_train:save'),
-  run_locally = 1 ;
+  run_locally = 0 ;
 elseif isequal(task, 'signal_predict:pos') || isequal(task, 'content_predict:pos')
-  run_locally = 1 ;
+  run_locally = 0 ;
 elseif isequal(task, 'signal_predict:predict') || isequal(task, 'content_predict:predict')
   if num_contigs>=3 && num_contigs<=30,
-    run_locally = 1 ;
+    run_locally = 0 ;
   else
     run_locally = 1 ;
   end ;
