@@ -364,8 +364,8 @@ fprintf('--------------------------------------------------- \n') ;
 
 fclose(fd) ;
 
-ret=unix(sprintf('~/bin/cleanup_output.sh %s', annotation_fname)) ;
-assert(ret==0) ;
+%ret=unix(sprintf('~/bin/cleanup_output.sh %s', annotation_fname)) ;
+%assert(ret==0) ;
 
 disp('Done.') ;
 

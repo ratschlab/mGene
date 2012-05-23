@@ -75,6 +75,6 @@ if exist('information_file'),
   fprintf(fd,'---------------------------------------------------- \n');
   fclose(fd) ;
 
-  ret=unix(sprintf('~/bin/cleanup_output.sh %s', information_file)) ;
-  assert(ret==0) ;
+  %ret=unix(sprintf('~/bin/cleanup_output.sh %s', information_file)) ;
+  %assert(ret==0) ;
 end ;

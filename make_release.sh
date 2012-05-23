@@ -9,11 +9,11 @@ mkdir -p release/src/parsegff/
 #sh copy_files.sh
 
 # remove binaries
-find release -name \*.mexa64 -exec rm -rf '{}' ';'
-find release -name \*.mex -exec rm -rf '{}' ';'
-find release -name \*.oct -exec rm -rf '{}' ';'
-find release -name \*.o -exec rm -rf '{}' ';'
-rm src/samtools/samtools
+#find release -name \*.mexa64 -exec rm -rf '{}' ';'
+#find release -name \*.mex -exec rm -rf '{}' ';'
+#find release -name \*.oct -exec rm -rf '{}' ';'
+#find release -name \*.o -exec rm -rf '{}' ';'
+#rm src/samtools/samtools
 
 RDIR=mgene-0.2.0-beta ;
 mkdir -p $RDIR
