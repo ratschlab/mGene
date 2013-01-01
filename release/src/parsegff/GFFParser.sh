@@ -6,8 +6,8 @@ source `dirname $0`/../mgene_config.sh
 ### TODO: either make sure that the right python/scipy version is available in the configure file
 ### 		or adjust the savemat call (the problem is that the "oned_as" keyword does not 
 ### 		exist in all scipy versions) to work with different python versions
-#export PYTHONPATH=$PYTHONPATH:/fml/ag-raetsch/home/vipin/lib/python2.5/site-packages/
-export PYTHONPATH=/home/galaxy/lib/lib/python2.6/dist-packages/:/home/galaxy/lib/python2.6/site-packages/:/home/galaxy/lib/python2.5/site-packages/:/home/galaxy/svn/projects/genefinding/parsegff/:/home/galaxy/python/lib/python2.5/site-packages/:/fml/ag-raetsch/home/jonas/shogun/python/lib/python2.5/site-packages:/fml/ag-raetsch/home/jonas/shogun/trunk/src:/fml/ag-raetsch/home/jonas/shogun/trunk/src/python_modular
+#export PYTHONPATH=$PYTHONPATH:/cbio/grlab/home/vipin/lib/python2.5/site-packages/
+export PYTHONPATH=/home/galaxy/lib/lib/python2.6/dist-packages/:/home/galaxy/lib/python2.6/site-packages/:/home/galaxy/lib/python2.5/site-packages/:/home/galaxy/svn/projects/genefinding/parsegff/:/home/galaxy/python/lib/python2.5/site-packages/:/cbio/grlab/home/jonas/shogun/python/lib/python2.5/site-packages:/cbio/grlab/home/jonas/shogun/trunk/src:/cbio/grlab/home/jonas/shogun/trunk/src/python_modular
 
 if ! test -f $2
 then

@@ -1,5 +1,5 @@
 #!/bin/bash
-samtoolsdr="/fml/ag-raetsch/share/software/samtools/"
+samtoolsdr="/cbio/grlab/share/software/samtools/"
 
 for m in `ls *.bam`
 do

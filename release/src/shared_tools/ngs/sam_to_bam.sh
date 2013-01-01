@@ -10,7 +10,7 @@ cd $basedr
 
 fastaname=$2
 
-samtoolsdr="/fml/ag-raetsch/share/software/samtools/"
+samtoolsdr="/cbio/grlab/share/software/samtools/"
 
 
 if [ -e ${fastaname}.fai ]
