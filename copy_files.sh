@@ -17,7 +17,7 @@ rsync -a ~/svn/tools/genomes release/src/shared_tools/
 rsync -a ~/svn/tools/rproc release/src/shared_tools/
 rsync -a ~/svn/tools/utils release/src/shared_tools/
 rsync -a ~/svn/tools/prob_plif release/src/shared_tools/
-rsync -a /fml/ag-raetsch/share/software/samtools/ release/src/samtools/
+rsync -a /cbio/grlab/share/software/samtools/ release/src/samtools/
 
 cp ~/svn/projects/mGene_core/auxiliary_data/add_reads_from_bam.m release/src/auxiliary_data/
 GFF_DIR2=~/svn/projects/genefinding/parsegff
